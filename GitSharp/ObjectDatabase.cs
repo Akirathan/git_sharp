@@ -8,6 +8,7 @@ using GitSharp.Objects;
 namespace GitSharp {
 	internal class ObjectDatabase {
 		private const string DefaultPath = ".git_sharp/objects";
+		private const string BlobFileType = "blob";
 
 		public ObjectDatabase()
 		{
@@ -52,15 +53,28 @@ namespace GitSharp {
 		/// </returns>
 		public Blob RetrieveBlob(HashKey key)
 		{
-			if (!File.Exists(key.GetStringRepresentation())) {
+			StreamReader reader = null;
+			try {
+				reader = new StreamReader(DefaultPath + "/" + key.GetStringRepresentation());
+			}
+			catch (FileNotFoundException) {
 				return null;
 			}
+
+			if (reader.ReadLine() != BlobFileType) {
+				// Object is not blob type.
+				return null;
+			}
+			
+			Blob blob = new Blob(reader.ReadToEnd());
+			reader.Close();
+			return blob;
 		}
 		
 		private string CreateBlobFileContent(Blob blob)
 		{
 			StringBuilder contentBuilder = new StringBuilder();
-			contentBuilder.AppendLine("blob");
+			contentBuilder.AppendLine(BlobFileType);
 			contentBuilder.Append(blob.Content);
 			return contentBuilder.ToString();
 		}
