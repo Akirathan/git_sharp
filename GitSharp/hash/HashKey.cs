@@ -4,7 +4,7 @@
 		
 		public HashKey(byte[] hash)
 		{
-			
+			content = hash;
 		}
 
 		public byte[] Content {
