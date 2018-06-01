@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GitSharp.objects {
+namespace GitSharp.Objects {
 	public class Commit : GitObject {
         private Tree _tree;
 

@@ -1,5 +1,5 @@
-﻿namespace GitSharp.objects {
-	public class Blob : GitObject {
+﻿namespace GitSharp.Objects {
+	internal class Blob : GitObject {
 		
 	}
 }
