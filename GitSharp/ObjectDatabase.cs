@@ -24,7 +24,7 @@ namespace GitSharp {
 		{
 			string blobFileContent = Blob.CreateBlobFileContent(blob);
 			HashKey key = ContentHasher.hash(blobFileContent);
-			WriteObjectContentToFile(blobFileContent, key.GetStringRepresentation());
+			WriteObjectContentToFile(blobFileContent, key.ToString());
 			return key;
 		}
 
@@ -32,7 +32,7 @@ namespace GitSharp {
 		{
 			string treeFileContent = Tree.CreateTreeFileContent(tree);
 			HashKey key = ContentHasher.hash(treeFileContent);
-			WriteObjectContentToFile(treeFileContent, key.GetStringRepresentation());
+			WriteObjectContentToFile(treeFileContent, key.ToString());
 			return key;
 		}
 
@@ -45,7 +45,7 @@ namespace GitSharp {
 		/// </returns>
 		public Blob RetrieveBlob(HashKey key)
 		{
-			string fileName = key.GetStringRepresentation();
+			string fileName = key.ToString();
 
 			string fileContent = ReadFileContent(fileName);
 			if (fileContent == null) {

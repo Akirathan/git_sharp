@@ -108,7 +108,7 @@ namespace GitSharp.Objects {
 			
 			public override string ToString()
 			{
-				return "blob " + Key.GetStringRepresentation() + " " + FileName;
+				return "blob " + Key.ToString() + " " + FileName;
 			}
 
 			/// <summary>
@@ -155,7 +155,7 @@ namespace GitSharp.Objects {
 			
 			public override string ToString()
 			{
-				return "tree " + Key.GetStringRepresentation() + " " + DirectoryName;
+				return "tree " + Key.ToString() + " " + DirectoryName;
 			}
 		}
 	}

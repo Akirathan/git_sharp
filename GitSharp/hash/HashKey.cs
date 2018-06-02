@@ -44,7 +44,7 @@ namespace GitSharp.Hash {
 		/// Note that Base64 encoding is not used due to possible conflicts.
 		/// </summary>
 		/// <returns> string representing hexadecimal format of this HashKey </returns>
-		public string GetStringRepresentation()
+		public override string ToString()
 		{
 			return GetHexRepresentation(content);
 		}
