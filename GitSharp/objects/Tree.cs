@@ -38,12 +38,18 @@ namespace GitSharp.Objects {
                     }
                     treeEntries.Add(treeEntry);
                 }
-                else if (lineItems[0] == "blob") {
-                    
+                else if (BlobEntry.IsBlobEntry(lineItems)) {
+	                BlobEntry blobEntry;
+	                if (!BlobEntry.ParseFromStringLineItems(lineItems, out blobEntry)) {
+		                return null;
+	                }
+	                blobEntries.Add(blobEntry);
                 }
 
 				line = reader.ReadLine();
 			}
+			
+			return new Tree(blobEntries, treeEntries);
 		}
 
 		public static string CreateTreeFileContent(Tree tree)
@@ -84,6 +90,22 @@ namespace GitSharp.Objects {
 			public string FileName;
 			public Blob Blob;
 
+			public static bool IsBlobEntry(string[] lineItems)
+			{
+				return lineItems[0] == "blob";
+			}
+
+			public static bool ParseFromStringLineItems(string[] lineItems, out BlobEntry blobEntry)
+			{
+				blobEntry = new BlobEntry();
+				if (lineItems.Length != 3) {
+					return false;
+				}
+				blobEntry.Key = HashKey.ParseFromString(lineItems[1]);
+				blobEntry.FileName = lineItems[2];
+				return true;
+			}
+			
 			public override string ToString()
 			{
 				return "blob " + Key.GetStringRepresentation() + " " + FileName;
@@ -115,8 +137,7 @@ namespace GitSharp.Objects {
 				if (lineItems.Length != 3) {
 					return false;
 				}
-
-				treeEntry.Key = lineItems[1];
+				treeEntry.Key = HashKey.ParseFromString(lineItems[1]);
 				treeEntry.DirectoryName = lineItems[2];
 				return true;
 			}
