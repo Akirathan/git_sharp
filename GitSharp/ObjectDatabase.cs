@@ -22,10 +22,9 @@ namespace GitSharp {
 
 		public HashKey Store(Blob blob)
 		{
-			HashKey key = ContentHasher.hash(blob.Content);
-			string keyStr = key.GetStringRepresentation();
-			string blobFileContent = CreateBlobFileContent(blob);
-			WriteObjectContentToFile(blobFileContent, keyStr);
+			string blobFileContent = Blob.CreateBlobFileContent(blob);
+			HashKey key = ContentHasher.hash(blobFileContent);
+			WriteObjectContentToFile(blobFileContent, key.GetStringRepresentation());
 			return key;
 		}
 
