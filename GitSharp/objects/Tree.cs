@@ -85,10 +85,10 @@ namespace GitSharp.Objects {
 
 		public struct BlobEntry {
 			// TODO: FileMode
-			public HashKey Key;
 
-			public string FileName;
 			private Blob _blob;
+			private HashKey _key;
+			private string _fileName;
 
 			public static bool IsBlobEntry(string[] lineItems)
 			{
@@ -101,16 +101,19 @@ namespace GitSharp.Objects {
 				if (lineItems.Length != 3) {
 					return false;
 				}
-				blobEntry.Key = HashKey.ParseFromString(lineItems[1]);
-				blobEntry.FileName = lineItems[2];
+				blobEntry._key= HashKey.ParseFromString(lineItems[1]);
+				blobEntry._fileName= lineItems[2];
 				return true;
 			}
-			
-			public override string ToString()
-			{
-				return "blob " + Key.ToString() + " " + FileName;
-			}
 
+			public HashKey Key {
+				get { return _key; }
+			}
+			
+			public string FileName {
+				get { return _fileName; }
+			}
+			
 			/// <summary>
 			/// Retrieves blob object on demand.
 			/// </summary>
@@ -121,13 +124,20 @@ namespace GitSharp.Objects {
 				// _blob = ...
 				return null;
 			}
+			
+			public override string ToString()
+			{
+				return "blob " + Key.ToString() + " " + FileName;
+			}
+
 		}
 
 		public struct TreeEntry {
 			// TODO: FileMode
-			public HashKey Key;
-			public string DirectoryName;
-			public Tree Tree;
+
+			private HashKey _key;
+			private string _directoryName;
+			private Tree _tree;
 
 			public static bool IsTreeEntry(string[] lineItems)
 			{
@@ -148,9 +158,23 @@ namespace GitSharp.Objects {
 				if (lineItems.Length != 3) {
 					return false;
 				}
-				treeEntry.Key = HashKey.ParseFromString(lineItems[1]);
-				treeEntry.DirectoryName = lineItems[2];
+				treeEntry._key= HashKey.ParseFromString(lineItems[1]);
+				treeEntry._directoryName= lineItems[2];
 				return true;
+			}
+
+			public HashKey Key {
+				get { return _key; }
+			}
+
+			public string DirectoryName {
+				get { return _directoryName; }
+			}
+
+			public Tree GetTree()
+			{
+				// _tree = ...
+				return null;
 			}
 			
 			public override string ToString()
