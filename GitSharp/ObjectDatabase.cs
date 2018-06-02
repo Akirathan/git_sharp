@@ -46,9 +46,15 @@ namespace GitSharp {
 		/// </returns>
 		public Blob RetrieveBlob(HashKey key)
 		{
+			string fileName = key.GetStringRepresentation();
+
+			if (!File.Exists(fileName)) {
+				return null;
+			}
+			
 			StreamReader reader = null;
 			try {
-				reader = new StreamReader(DefaultPath + "/" + key.GetStringRepresentation());
+				reader = new StreamReader(DefaultPath + "/" + fileName);
 			}
 			catch (FileNotFoundException) {
 				return null;
