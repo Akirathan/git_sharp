@@ -6,21 +6,15 @@ using GitSharp.Hash;
 using GitSharp.Objects;
 
 namespace GitSharp {
-	internal class ObjectDatabase {
+	internal static class ObjectDatabase {
 		private const string DefaultPath = ".git_sharp/objects";
-		private const string BlobFileType = "blob";
 
-		public ObjectDatabase()
+		static ObjectDatabase()
 		{
-			try {
-				Directory.CreateDirectory(DefaultPath);
-			}
-			catch (Exception e) {
-				throw new Exception("Cannot create objects directory", e);
-			}
+			CreateObjectsDirectory();
 		}
 
-		public HashKey Store(Blob blob)
+		public static HashKey Store(Blob blob)
 		{
 			string blobFileContent = Blob.CreateBlobFileContent(blob);
 			HashKey key = ContentHasher.hash(blobFileContent);
@@ -28,7 +22,7 @@ namespace GitSharp {
 			return key;
 		}
 
-		public HashKey Store(Tree tree)
+		public static HashKey Store(Tree tree)
 		{
 			string treeFileContent = Tree.CreateTreeFileContent(tree);
 			HashKey key = ContentHasher.hash(treeFileContent);
@@ -43,7 +37,7 @@ namespace GitSharp {
 		/// <returns>
 		/// null when no blob found
 		/// </returns>
-		public Blob RetrieveBlob(HashKey key)
+		public static Blob RetrieveBlob(HashKey key)
 		{
 			string fileName = key.ToString();
 
@@ -55,7 +49,7 @@ namespace GitSharp {
 			return Blob.ParseFromString(fileContent);
 		}
 		
-		private void WriteObjectContentToFile(string content, string fileName)
+		private static void WriteObjectContentToFile(string content, string fileName)
 		{
 			StreamWriter writer = null;
 			try {
@@ -78,7 +72,7 @@ namespace GitSharp {
 		/// </summary>
 		/// <param name="fileName"></param>
 		/// <returns>null if reading fails</returns>
-		private string ReadFileContent(string fileName)
+		private static string ReadFileContent(string fileName)
 		{
 			string content;
 			try {
@@ -91,6 +85,20 @@ namespace GitSharp {
 			}
 
 			return content;
+		}
+
+		private static void CreateObjectsDirectory()
+		{
+			if (Directory.Exists(DefaultPath)) {
+				return;
+			}
+			
+			try {
+				Directory.CreateDirectory(DefaultPath);
+			}
+			catch (Exception e) {
+				throw new Exception("Cannot create objects directory", e);
+			}
 		}
 	}
 }
