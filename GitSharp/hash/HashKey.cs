@@ -1,8 +1,34 @@
-﻿using System.Text;
+﻿using System;
+using System.Globalization;
+using System.Text;
 
 namespace GitSharp.Hash {
 	public class HashKey {
 		private byte[] content;
+
+		/// <summary>
+		/// Parses a hash key from given string
+		/// </summary>
+		/// <param name="content">hexadecimal number string</param>
+		/// <returns>null if parsing fails</returns>
+		public static HashKey ParseFromString(string content)
+		{
+			if (content.Length % 2 != 0) {
+				return null;
+			}
+			byte[] bytes = new byte[content.Length / 2];
+			int bytesIdx = 0;
+			
+			for (int i = 0; i < content.Length; i += 2) {
+				byte b;
+				if (!Byte.TryParse(content.Substring(i, 2), NumberStyles.HexNumber, null, out b)) {
+					return null;
+				}
+				bytes[bytesIdx++] = b;
+			}
+			
+			return new HashKey(bytes);
+		}
 		
 		public HashKey(byte[] hash)
 		{
