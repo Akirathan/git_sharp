@@ -88,7 +88,7 @@ namespace GitSharp.Objects {
 			public HashKey Key;
 
 			public string FileName;
-			public Blob Blob;
+			private Blob _blob;
 
 			public static bool IsBlobEntry(string[] lineItems)
 			{
@@ -109,6 +109,17 @@ namespace GitSharp.Objects {
 			public override string ToString()
 			{
 				return "blob " + Key.GetStringRepresentation() + " " + FileName;
+			}
+
+			/// <summary>
+			/// Retrieves blob object on demand.
+			/// </summary>
+			/// <returns></returns>
+			public Blob GetBlob()
+			{
+				// ...
+				// _blob = ...
+				return null;
 			}
 		}
 
