@@ -25,22 +25,15 @@ namespace GitSharp {
 			HashKey key = ContentHasher.hash(blob.Content);
 			string keyStr = key.GetStringRepresentation();
 			string blobFileContent = CreateBlobFileContent(blob);
+			WriteObjectContentToFile(blobFileContent, keyStr);
+			return key;
+		}
 
-			StreamWriter writer = null;
-			try {
-				FileStream fileStream = File.Create(DefaultPath + "/" + keyStr);
-				writer = new StreamWriter(fileStream);
-				writer.Write(blobFileContent);
-			}
-			catch (Exception e) {
-				throw new Exception("Cannot create or write blob file", e);
-			}
-			finally {
-				if (writer != null) {
-					writer.Close();
-				}
-			}
-
+		public HashKey Store(Tree tree)
+		{
+			string treeFileContent = Tree.CreateTreeFileContent(tree);
+			HashKey key = ContentHasher.hash(treeFileContent);
+			WriteObjectContentToFile(treeFileContent, key.GetStringRepresentation());
 			return key;
 		}
 
@@ -69,6 +62,24 @@ namespace GitSharp {
 			Blob blob = new Blob(reader.ReadToEnd());
 			reader.Close();
 			return blob;
+		}
+		
+		private void WriteObjectContentToFile(string content, string fileName)
+		{
+			StreamWriter writer = null;
+			try {
+				FileStream fileStream = File.Create(DefaultPath + "/" + fileName);
+				writer = new StreamWriter(fileStream);
+				writer.Write(content);
+			}
+			catch (Exception e) {
+				throw new Exception("Cannot create or write blob file", e);
+			}
+			finally {
+				if (writer != null) {
+					writer.Close();
+				}
+			}
 		}
 		
 		private string CreateBlobFileContent(Blob blob)
