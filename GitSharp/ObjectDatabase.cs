@@ -48,6 +48,22 @@ namespace GitSharp {
 
 			return Blob.ParseFromString(fileContent);
 		}
+
+		/// <summary>
+		/// Retrieves tree object from the database.
+		/// </summary>
+		/// <param name="key">key to use for searching in database</param>
+		/// <returns>null when no tree was found</returns>
+		public static Tree RetrieveTree(HashKey key)
+		{
+			string fileName = key.ToString();
+			string fileContent = ReadFileContent(fileName);
+			if (fileContent == null) {
+				return null;
+			}
+
+			return Tree.ParseFromString(fileContent);
+		}
 		
 		private static void WriteObjectContentToFile(string content, string fileName)
 		{
