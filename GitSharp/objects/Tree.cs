@@ -106,6 +106,13 @@ namespace GitSharp.Objects {
 				return true;
 			}
 
+			public BlobEntry(HashKey key, string fileName)
+			{
+				_key = key;
+				_fileName = fileName;
+				_blob = null;
+			}
+
 			public HashKey Key {
 				get { return _key; }
 			}
@@ -161,6 +168,13 @@ namespace GitSharp.Objects {
 				treeEntry._key= HashKey.ParseFromString(lineItems[1]);
 				treeEntry._directoryName= lineItems[2];
 				return true;
+			}
+
+			public TreeEntry(HashKey key, string directoryName)
+			{
+				_key = key;
+				_directoryName = directoryName;
+				_tree = null;
 			}
 
 			public HashKey Key {
