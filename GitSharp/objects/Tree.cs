@@ -7,8 +7,8 @@ using GitSharp.Hash;
 namespace GitSharp.Objects {
 	internal class Tree : GitObject {
 		private const string TreeFileType = "tree";
-		private List<TreeEntry> _treeEntries;
-		private List<BlobEntry> _blobEntries;
+		private readonly List<TreeEntry> _treeEntries;
+		private readonly List<BlobEntry> _blobEntries;
 
 		/// <summary>
 		/// Parses tree from given string. Suppose that string represents content
@@ -57,20 +57,31 @@ namespace GitSharp.Objects {
 			StringBuilder contentBuilder = new StringBuilder();
 			
 			contentBuilder.AppendLine(TreeFileType);
-			foreach (BlobEntry blobEntry in tree.GetBlobEntries()) {
-				contentBuilder.AppendLine(blobEntry.ToString());
-			}
-			foreach (TreeEntry treeEntry in tree.GetTreeEntries()) {
-				contentBuilder.AppendLine(treeEntry.ToString());
-			}
+            foreach (BlobEntry blobEntry in tree.GetBlobEntries()) {
+                contentBuilder.AppendLine(blobEntry.ToString());
+            }
+            foreach (TreeEntry treeEntry in tree.GetTreeEntries()) {
+                contentBuilder.AppendLine(treeEntry.ToString());
+            }
 
 			return contentBuilder.ToString();
 		}
 		
 		public Tree(List<BlobEntry> blobEntries, List<TreeEntry> treeEntries)
 		{
-			_blobEntries = blobEntries;
-			_treeEntries = treeEntries;
+			if (blobEntries == null) {
+				_blobEntries = new List<BlobEntry>();
+			}
+			else {
+                _blobEntries = blobEntries;
+			}
+
+			if (treeEntries == null) {
+				_treeEntries = new List<TreeEntry>();
+			}
+			else {
+                _treeEntries = treeEntries;
+			}
 		}
 
 		public List<BlobEntry> GetBlobEntries()
