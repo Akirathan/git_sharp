@@ -138,9 +138,10 @@ namespace GitSharp.Objects {
 			/// <returns></returns>
 			public Blob GetBlob()
 			{
-				// ...
-				// _blob = ...
-				return null;
+				if (_blob == null) {
+                    _blob = ObjectDatabase.RetrieveBlob(_key);
+				}
+				return _blob;
 			}
 			
 			public override string ToString()
