@@ -48,26 +48,12 @@ namespace GitSharp {
 		{
 			string fileName = key.GetStringRepresentation();
 
-			if (!File.Exists(fileName)) {
-				return null;
-			}
-			
-			StreamReader reader = null;
-			try {
-				reader = new StreamReader(DefaultPath + "/" + fileName);
-			}
-			catch (FileNotFoundException) {
+			string fileContent = ReadFileContent(fileName);
+			if (fileContent == null) {
 				return null;
 			}
 
-			if (reader.ReadLine() != BlobFileType) {
-				// Object is not blob type.
-				return null;
-			}
-			
-			Blob blob = new Blob(reader.ReadToEnd());
-			reader.Close();
-			return blob;
+			return Blob.ParseFromString(fileContent);
 		}
 		
 		private void WriteObjectContentToFile(string content, string fileName)
@@ -87,13 +73,25 @@ namespace GitSharp {
 				}
 			}
 		}
-		
-		private string CreateBlobFileContent(Blob blob)
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <returns>null if reading fails</returns>
+		private string ReadFileContent(string fileName)
 		{
-			StringBuilder contentBuilder = new StringBuilder();
-			contentBuilder.AppendLine(BlobFileType);
-			contentBuilder.Append(blob.Content);
-			return contentBuilder.ToString();
+			string content;
+			try {
+				StreamReader reader = new StreamReader(DefaultPath + "/" + fileName);
+				content = reader.ReadToEnd();
+			}
+			catch (Exception) {
+				// TODO: log
+				return null;
+			}
+
+			return content;
 		}
 	}
 }
