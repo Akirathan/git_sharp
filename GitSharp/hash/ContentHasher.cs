@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace GitSharp.hash {
+namespace GitSharp.Hash {
 	public class ContentHasher {
 		public static HashKey hash(string content)
 		{

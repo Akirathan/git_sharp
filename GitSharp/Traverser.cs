@@ -1,5 +1,8 @@
 ﻿namespace GitSharp {
-	public class Traverser {
-		
+	public static class Traverser {
+		public static void UpdateWorkingDirectoryIndex()
+		{
+			
+		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿namespace GitSharp.objects {
+﻿namespace GitSharp.Objects {
 	public class GitObject {
 		
 	}

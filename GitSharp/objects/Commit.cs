@@ -1,7 +1,7 @@
 ﻿using System;
 
-namespace GitSharp.objects {
-	public class Commit : GitObject {
+namespace GitSharp.Objects {
+	internal class Commit : GitObject {
         private Tree _tree;
 
         public Commit(Tree tree, Author author, DateTime dateTime)

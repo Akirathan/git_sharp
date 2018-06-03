@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Author.cs" />
+    <Compile Include="Compressor.cs" />
     <Compile Include="hash\ContentHasher.cs" />
     <Compile Include="hash\HashKey.cs" />
     <Compile Include="Index.cs" />
