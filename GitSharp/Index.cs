@@ -10,6 +10,12 @@ namespace GitSharp {
 	/// Index represents a database that contains (tracked) files as rows and their corresponding
 	/// working directory version, stage area version and repository version as columns.
 	/// Versions of files are saved as HashKeys ie. references to Blob objects.
+	/// 
+	/// Some of the columns may be null ie. 0 (for example when a file was never commited)
+	/// 
+	/// File is considered as being tracked after first call of 'git add' on that file.
+	/// So after this call, that file is added into Index.
+	/// 
 	/// </summary>
 	internal static class Index {
 		private static Dictionary<string, Entry> _entries = new Dictionary<string, Entry>();
@@ -26,22 +32,40 @@ namespace GitSharp {
 		public static bool Updated { get; private set; }
 		
 		/// <summary>
-		/// Returns content of file in working directory version.
+		/// Returns key to content of file in working directory version.
 		/// </summary>
 		/// <param name="fileName"></param>
-		/// <returns>Key representing pointer to content of the file</returns>
+		/// <returns>
+		/// Key representing pointer to content of the file.
+		/// </returns>
 		public static string GetWdirFileContentKey(string fileName)
 		{
-			return null;
+			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
+			string wdirContentKey = null;
+			
+			Debug.Assert(wdirContentKey != null, "wdir file content must be first set");
+			return wdirContentKey;
 		}
 
 		public static string GetStageFileContentKey(string fileName)
 		{
-			return null;
+			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
+			string stageContentKey = null;
+			
+			Debug.Assert(stageContentKey != null, "wdir file content must be first set");
+			return stageContentKey;
 		}
 		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <returns>
+		/// null when file was never commited.
+		/// </returns>
 		public static string GetRepoFileContentKey(string fileName)
 		{
+			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
 			return null;
 		}
 		
@@ -52,19 +76,34 @@ namespace GitSharp {
 		/// <param name="key">pointer to content of the file</param>
 		public static void SetWdirFileContentKey(string fileName, string key)
 		{
+			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
 			
 		}
 		
 		public static void SetStageFileContentKey(string fileName, string key)
 		{
+			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
 			
 		}
 		
 		public static void SetRepoFileContentKey(string fileName, string key)
 		{
+			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
 			
 		}
 
+		/// <summary>
+		/// Adds given file into the Index ie. starts tracking this file.
+		/// </summary>
+		/// <param name="fileName"></param>
+		public static void StartTrackingFile(string fileName)
+		{
+			Debug.Assert(!_entries.ContainsKey(fileName), "File can be added into index just once");
+			
+			Entry entry = new Entry(fileName);
+			_entries.Add(fileName, entry);
+		}
+		
 		/// <summary>
 		/// Updates wdir column for all files.
 		/// Note that this is necessary in 'git status' call.
@@ -109,7 +148,11 @@ namespace GitSharp {
 				lineBuilder.Append(" ");
 				return lineBuilder.ToString();
 			}
-			
+
+			public Entry(string fileName) : this(fileName, "0", "0", "0")
+			{
+			}
+
 			public Entry(string fileName, string wdirKey, string stageKey, string repoKey)
 			{
 				FileName = fileName;
@@ -118,10 +161,10 @@ namespace GitSharp {
 				RepoKey = repoKey;
 			}
 			
-			public string FileName { get; }
-			public string WdirKey { get; }
-			public string StageKey { get; }
-			public string RepoKey { get; }
+			public string FileName { get; set; }
+			public string WdirKey { get; set; }
+			public string StageKey { get; set; }
+			public string RepoKey { get; set; }
 		}
 
 		private static class Serializer {
