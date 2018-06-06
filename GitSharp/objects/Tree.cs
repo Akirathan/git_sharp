@@ -94,6 +94,16 @@ namespace GitSharp.Objects {
 			return _treeEntries;
 		}
 
+		public Tree FindOrCreateSubTree(string[] dirNames)
+		{
+			return null;
+		}
+
+		public void Checkout()
+		{
+			
+		}
+
 		public struct BlobEntry {
 			// TODO: FileMode
 

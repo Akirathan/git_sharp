@@ -43,6 +43,8 @@
   <ItemGroup>
     <Compile Include="Author.cs" />
     <Compile Include="Compressor.cs" />
+    <Compile Include="File.cs" />
+    <Compile Include="FileTracker.cs" />
     <Compile Include="hash\ContentHasher.cs" />
     <Compile Include="hash\HashKey.cs" />
     <Compile Include="Index.cs" />
@@ -53,6 +55,7 @@
     <Compile Include="objects\Tree.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reference\ReferenceTracker.cs" />
     <Compile Include="Traverser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
