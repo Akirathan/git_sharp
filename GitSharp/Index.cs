@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 
 namespace GitSharp {
 	/// <summary>
@@ -12,7 +16,7 @@ namespace GitSharp {
 		
 		static Index()
 		{
-			
+			Serializer.ReadFromFile();
 		}
 		
 		/// <summary>
@@ -71,6 +75,11 @@ namespace GitSharp {
 			// ...
 			Updated = true;
 		}
+		
+		private static ICollection<Entry> GetEntries()
+		{
+			return _entries.Values;
+		}
 
 		private static void AddEntry(Entry entry)
 		{
@@ -78,16 +87,69 @@ namespace GitSharp {
 		}
 
 		private class Entry {
-			public string FileName { get; private set; }
-			public string WdirKey { get; private set; }
-			public string StageKey { get; private set; }
-			public string RepoKey { get; private set; }
+			public static Entry ParseFromLine(string line)
+			{
+				string[] lineItems = line.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+				if (lineItems.Length != 4) {
+					return null;
+				}
+				return new Entry(lineItems[0], lineItems[1], lineItems[2], lineItems[3]);
+			}
+
+			public static string PrintToLine(Entry entry)
+			{
+				StringBuilder lineBuilder = new StringBuilder();
+				lineBuilder.Append(entry.FileName);
+				lineBuilder.Append(" ");
+				lineBuilder.Append(entry.WdirKey);
+				lineBuilder.Append(" ");
+				lineBuilder.Append(entry.StageKey);
+				lineBuilder.Append(" ");
+				lineBuilder.Append(entry.RepoKey);
+				lineBuilder.Append(" ");
+				return lineBuilder.ToString();
+			}
+			
+			public Entry(string fileName, string wdirKey, string stageKey, string repoKey)
+			{
+				FileName = fileName;
+				WdirKey = wdirKey;
+				StageKey = stageKey;
+				RepoKey = repoKey;
+			}
+			
+			public string FileName { get; }
+			public string WdirKey { get; }
+			public string StageKey { get; }
+			public string RepoKey { get; }
 		}
 
 		private static class Serializer {
-			public static void ReadFromFile(string fileName)
+			private const string IndexPath = "index"; // TODO: ROOT_PATH 
+			
+			/// <summary>
+			/// Fills all the entries of Index.
+			/// </summary>
+			public static void ReadFromFile()
 			{
-				
+				using (StreamReader reader = new StreamReader(IndexPath)) {
+					string line = "";
+					while (line != null) {
+						line = reader.ReadLine();
+						Entry entry = Entry.ParseFromLine(line);
+						AddEntry(entry);
+					}
+				}
+			}
+
+			public static void WriteToFile()
+			{
+				using (StreamWriter writer = new StreamWriter(IndexPath)) {
+					ICollection<Entry> entries = GetEntries();
+					foreach (Entry entry in entries) {
+						writer.WriteLine(Entry.PrintToLine(entry));
+					}
+				}
 			}
 		}
 	}
