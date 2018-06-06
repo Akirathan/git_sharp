@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using GitSharp.Hash;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace GitSharp {
 	/// <summary>
@@ -8,6 +8,13 @@ namespace GitSharp {
 	/// Versions of files are saved as HashKeys ie. references to Blob objects.
 	/// </summary>
 	internal static class Index {
+		private static Dictionary<string, Entry> _entries = new Dictionary<string, Entry>();
+		
+		static Index()
+		{
+			
+		}
+		
 		/// <summary>
 		/// Index should be updated just once during runtime for performance reasons.
 		/// Note that calling Update() more than once is considered an error.
@@ -17,19 +24,19 @@ namespace GitSharp {
 		/// <summary>
 		/// Returns content of file in working directory version.
 		/// </summary>
-		/// <param name="file"></param>
+		/// <param name="fileName"></param>
 		/// <returns>Key representing pointer to content of the file</returns>
-		public static HashKey GetWdirFileContentKey(File file)
+		public static string GetWdirFileContentKey(string fileName)
 		{
 			return null;
 		}
 
-		public static HashKey GetStageFileContentKey(File file)
+		public static string GetStageFileContentKey(string fileName)
 		{
 			return null;
 		}
 		
-		public static HashKey GetRepoFileContentKey(File file)
+		public static string GetRepoFileContentKey(string fileName)
 		{
 			return null;
 		}
@@ -37,19 +44,19 @@ namespace GitSharp {
 		/// <summary>
 		/// Sets version of the content of given file.
 		/// </summary>
-		/// <param name="file"></param>
+		/// <param name="fileName"></param>
 		/// <param name="key">pointer to content of the file</param>
-		public static void SetWdirFileContentKey(File file, HashKey key)
+		public static void SetWdirFileContentKey(string fileName, string key)
 		{
 			
 		}
 		
-		public static void SetStageFileContentKey(File file, HashKey key)
+		public static void SetStageFileContentKey(string fileName, string key)
 		{
 			
 		}
 		
-		public static void SetRepoFileContentKey(File file, HashKey key)
+		public static void SetRepoFileContentKey(string fileName, string key)
 		{
 			
 		}
@@ -63,6 +70,25 @@ namespace GitSharp {
 			Debug.Assert(Updated == false, "Update should be called just once.");
 			// ...
 			Updated = true;
+		}
+
+		private static void AddEntry(Entry entry)
+		{
+			
+		}
+
+		private class Entry {
+			public string FileName { get; private set; }
+			public string WdirKey { get; private set; }
+			public string StageKey { get; private set; }
+			public string RepoKey { get; private set; }
+		}
+
+		private static class Serializer {
+			public static void ReadFromFile(string fileName)
+			{
+				
+			}
 		}
 	}
 }
