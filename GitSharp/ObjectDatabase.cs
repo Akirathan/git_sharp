@@ -69,7 +69,7 @@ namespace GitSharp {
 		{
 			StreamWriter writer = null;
 			try {
-				FileStream fileStream = File.Create(DefaultPath + "/" + fileName);
+				FileStream fileStream = System.IO.File.Create(DefaultPath + "/" + fileName);
 				writer = new StreamWriter(fileStream);
 				writer.Write(content);
 			}

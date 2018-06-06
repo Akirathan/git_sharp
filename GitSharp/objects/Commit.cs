@@ -1,10 +1,11 @@
 ﻿using System;
+using GitSharp.Hash;
 
 namespace GitSharp.Objects {
 	internal class Commit : GitObject {
         private Tree _tree;
 
-        public Commit(Tree tree, Author author, DateTime dateTime)
+        public Commit(HashKey parent, Tree tree, Author author, DateTime dateTime)
         { }
 
         public Author Author {
