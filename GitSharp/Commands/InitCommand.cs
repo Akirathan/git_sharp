@@ -13,12 +13,19 @@ namespace GitSharp.Commands {
 			
 			CreateRootDir();
 			CreateAllFilesDirectories();
+			PrintRepoInitialized();
 		}
 
 		private void PrintTryingToReinitializeRepo(string rootPath)
 		{
 			Console.WriteLine($"There is already git direcotry in {rootPath}");
 			Console.WriteLine("  If you want to reinitialize, remove it first");
+		}
+
+		private void PrintRepoInitialized()
+		{
+			string repoAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), Traverser.GitRootDirName);
+			Console.WriteLine($"Initialized git repository in {repoAbsolutePath}");
 		}
 
 		private void CreateRootDir()
@@ -29,7 +36,7 @@ namespace GitSharp.Commands {
 		private void CreateAllFilesDirectories()
 		{
 			CreateDirectory(ObjectDatabase.DefaultPath);
-			CreateFile();
+			CreateFile(Index.IndexPath);	
 		}
 
 		private void CreateDirectory(string dirName)
