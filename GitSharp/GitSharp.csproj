@@ -42,17 +42,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Author.cs" />
+    <Compile Include="Cli.cs" />
+    <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\InitCommand.cs" />
+    <Compile Include="Commands\StatusCommand.cs" />
     <Compile Include="Compressor.cs" />
     <Compile Include="File.cs" />
-    <Compile Include="FileTracker.cs" />
-    <Compile Include="hash\ContentHasher.cs" />
-    <Compile Include="hash\HashKey.cs" />
+    <Compile Include="Hash\ContentHasher.cs" />
+    <Compile Include="Hash\HashKey.cs" />
+    <Compile Include="IndexFileOperations.cs" />
     <Compile Include="Index.cs" />
     <Compile Include="ObjectDatabase.cs" />
-    <Compile Include="objects\Blob.cs" />
-    <Compile Include="objects\Commit.cs" />
-    <Compile Include="objects\GitObject.cs" />
-    <Compile Include="objects\Tree.cs" />
+    <Compile Include="Objects\Blob.cs" />
+    <Compile Include="Objects\Commit.cs" />
+    <Compile Include="Objects\GitObject.cs" />
+    <Compile Include="Objects\Tree.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reference\ReferenceTracker.cs" />
