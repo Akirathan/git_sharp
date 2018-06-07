@@ -25,12 +25,17 @@ namespace GitSharp {
 			Serializer.ReadFromFile();
 		}
 		
+		public static void Dispose()
+		{
+			Serializer.WriteToFile();
+		}
+		
 		/// <summary>
 		/// Index should be updated just once during runtime for performance reasons.
 		/// Note that calling Update() more than once is considered an error.
 		/// </summary>
 		public static bool Updated { get; private set; }
-		
+
 		/// <summary>
 		/// Returns key to content of file in working directory version.
 		/// </summary>
@@ -38,63 +43,54 @@ namespace GitSharp {
 		/// <returns>
 		/// Key representing pointer to content of the file.
 		/// </returns>
-		public static string GetWdirFileContentKey(string fileName)
+		public static string GetFileContentKey(string fileName)
 		{
-			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			string wdirContentKey = null;
-			
-			Debug.Assert(wdirContentKey != null, "wdir file content must be first set");
-			return wdirContentKey;
+			return GetWdirFileContentKey(fileName);
 		}
 
-		public static string GetStageFileContentKey(string fileName)
+		public static IEnumerable<string> GetStagedFiles()
 		{
-			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			string stageContentKey = null;
-			
-			Debug.Assert(stageContentKey != null, "wdir file content must be first set");
-			return stageContentKey;
-		}
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="fileName"></param>
-		/// <returns>
-		/// null when file was never commited.
-		/// </returns>
-		public static string GetRepoFileContentKey(string fileName)
-		{
-			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			return null;
+			return null; // TODO:
 		}
 		
 		/// <summary>
 		/// Sets version of the content of given file.
 		/// </summary>
 		/// <param name="fileName"></param>
-		/// <param name="key">pointer to content of the file</param>
-		public static void SetWdirFileContentKey(string fileName, string key)
+		/// <param name="contentKey">pointer to content of the file</param>
+		public static void UpdateFileContentKey(string fileName, string contentKey)
 		{
-			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			
+			SetWdirFileContentKey(fileName, contentKey);
 		}
 		
-		public static void SetStageFileContentKey(string fileName, string key)
+		public static bool IsStaged(string fileName)
 		{
-			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			
-		}
-		
-		public static void SetRepoFileContentKey(string fileName, string key)
-		{
-			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			
+			return GetWdirFileContentKey(fileName) == GetStageFileContentKey(fileName);
 		}
 
-		public static void Dispose()
+		public static bool IsCommited(string fileName)
 		{
-			Serializer.WriteToFile();
+			return GetStageFileContentKey(fileName) == GetRepoFileContentKey(fileName);
+		}
+
+		/// <summary>
+		/// When index contains file, the file is considered to be tracked.
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <returns></returns>
+		public static bool ContainsFile(string fileName)
+		{
+			return _entries.ContainsKey(fileName);
+		}
+		
+		public static void StageFile(string fileName)
+		{
+			SetStageFileContentKey(fileName, GetWdirFileContentKey(fileName));
+		}
+
+		public static void CommitFile(string fileName)
+		{
+			SetRepoFileContentKey(fileName, GetStageFileContentKey(fileName));
 		}
 
 		/// <summary>
@@ -127,6 +123,54 @@ namespace GitSharp {
 
 		private static void AddEntry(Entry entry)
 		{
+			
+		}
+		
+		private static string GetWdirFileContentKey(string fileName)
+		{
+			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
+			string wdirContentKey = null;
+			
+			Debug.Assert(wdirContentKey != null, "wdir file content must be first set");
+			return wdirContentKey;
+		}
+		
+		private static string GetStageFileContentKey(string fileName)
+		{
+			string stageContentKey = null;
+			
+			Debug.Assert(stageContentKey != null, "wdir file content must be first set");
+			return stageContentKey;
+		}
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <returns>
+		/// null when file was never commited.
+		/// </returns>
+		private static string GetRepoFileContentKey(string fileName)
+		{
+			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
+			return null;
+		}
+		
+		private static void SetStageFileContentKey(string fileName, string key)
+		{
+			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
+			
+		}
+		
+		private static void SetRepoFileContentKey(string fileName, string key)
+		{
+			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
+			
+		}
+		
+		private static void SetWdirFileContentKey(string fileName, string key)
+		{
+			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
 			
 		}
 
