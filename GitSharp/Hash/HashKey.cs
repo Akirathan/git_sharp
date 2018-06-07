@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
 namespace GitSharp.Hash {
-	public class HashKey {
+	/// <summary>
+	/// Wrapper for SHA-1 hash.
+	/// It is used as a key to ObjectDatabase.
+	/// </summary>
+	public class HashKey : IEquatable<string>, IEquatable<HashKey> {
 		private byte[] content;
 
 		/// <summary>
@@ -32,6 +37,7 @@ namespace GitSharp.Hash {
 		
 		public HashKey(byte[] hash)
 		{
+			Debug.Assert(hash.Length == 20, "Wrong size of hash (maybe not SHA-1?)");
 			content = hash;
 		}
 
@@ -39,6 +45,26 @@ namespace GitSharp.Hash {
 			get { return content; }
 		}
 
+		public bool Equals(string s)
+		{
+			HashKey other = ParseFromString(s);
+			return Equals(other);
+		}
+
+		public bool Equals(HashKey otherKey)
+		{
+			if (otherKey == null) {
+				return false;
+			}
+			
+			for (int i = 0; i < content.Length; i++) {
+				if (content[i] != otherKey.content[i]) {
+					return false;
+				}
+			}
+			return true;
+		}
+		
 		/// <summary>
 		/// Returns hexadecimal string representation (of length 40) of this HashKey.
 		/// Note that Base64 encoding is not used due to possible conflicts.
