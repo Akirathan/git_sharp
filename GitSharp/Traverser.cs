@@ -34,7 +34,20 @@ namespace GitSharp {
 		
 		public static IEnumerable<string> GetAllFiles()
 		{
-        	return Directory.EnumerateFiles(Directory.GetCurrentDirectory(), "*", SearchOption.AllDirectories);
+			List<string> files = new List<string>();
+			string currDir = Directory.GetCurrentDirectory();
+			
+			IEnumerable<string> dirNames = Directory.EnumerateDirectories(currDir);
+			foreach (string dirName in dirNames) {
+				if (dirName == GitRootDirName) {
+					continue;
+				}
+				IEnumerable<string> dirFiles =
+					Directory.EnumerateFiles(dirName, "*", SearchOption.AllDirectories);
+				
+				files.AddRange(dirFiles);
+			}
+			return files;
 		}
 
 		private static bool DirContainsGitDir(string dirPath)
