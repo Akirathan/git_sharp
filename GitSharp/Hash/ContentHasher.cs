@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace GitSharp.Hash {
 	public class ContentHasher {
-		public static HashKey hash(string content)
+		public static HashKey HashContent(string content)
 		{
 			byte[] bytes = new byte[content.Length];
 			System.Text.ASCIIEncoding.ASCII.GetBytes(content, 0, content.Length, bytes, 0);
@@ -14,7 +14,7 @@ namespace GitSharp.Hash {
 			return new HashKey(hash);
 		}
 
-		public static HashKey hashFileContent(string fileName)
+		public static HashKey HashFileContent(string fileName)
 		{
 			string content;
 			StreamReader reader = null;
@@ -31,7 +31,7 @@ namespace GitSharp.Hash {
 				}
 			}
 
-			return hash(content);
+			return HashContent(content);
 		}
 	}
 }

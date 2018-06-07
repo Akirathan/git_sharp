@@ -17,7 +17,7 @@ namespace GitSharp {
 		public static HashKey Store(Blob blob)
 		{
 			string blobFileContent = Blob.CreateBlobFileContent(blob);
-			HashKey key = ContentHasher.hash(blobFileContent);
+			HashKey key = ContentHasher.HashContent(blobFileContent);
 			WriteObjectContentToFile(blobFileContent, key.ToString());
 			return key;
 		}
@@ -25,7 +25,7 @@ namespace GitSharp {
 		public static HashKey Store(Tree tree)
 		{
 			string treeFileContent = Tree.CreateTreeFileContent(tree);
-			HashKey key = ContentHasher.hash(treeFileContent);
+			HashKey key = ContentHasher.HashContent(treeFileContent);
 			WriteObjectContentToFile(treeFileContent, key.ToString());
 			return key;
 		}
