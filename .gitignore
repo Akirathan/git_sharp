@@ -2,3 +2,5 @@
 debug/
 bin/
 obj/
+
+*.user
