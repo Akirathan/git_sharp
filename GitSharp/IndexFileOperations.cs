@@ -1,11 +1,9 @@
 ﻿namespace GitSharp {
-	internal static class FileTracker {
+	/// <summary>
+	/// 
+	/// </summary>
+	internal static class IndexFileOperations {
 		public static bool IsModified(File file)
-		{
-			return false;
-		}
-
-		public static bool IsStaged(File file)
 		{
 			return false;
 		}
@@ -32,11 +30,6 @@
 		}
 
 		public static File[] GetUntrackedFiles()
-		{
-			return null;
-		}
-
-		public static File[] GetStagedFiles()
 		{
 			return null;
 		}
