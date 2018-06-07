@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace GitSharp {
@@ -10,10 +11,8 @@ namespace GitSharp {
 		/// <summary>
 		/// Returns absolute path to the directory, where .git is stored.
 		/// Note that this method allows git to be invokend in some subdirectory.
+		/// When no .git directory can be found, exception is thrown.
 		/// </summary>
-		/// <returns>
-		/// null when there is no .git in all parents.
-		/// </returns>
 		public static string GetRootDirPath()
 		{
 			if (_rootDirPath != null) {
@@ -24,7 +23,7 @@ namespace GitSharp {
 			while (!DirContainsGitDir(enumeratedDir)) {
 				DirectoryInfo currDirInfo = Directory.GetParent(enumeratedDir);
 				if (currDirInfo == null) {
-					return null;
+					throw new Exception($"No git repository found (perphaps you should git init first?): {GitRootDirName}");
 				}
 				enumeratedDir = currDirInfo.FullName;
 			}
