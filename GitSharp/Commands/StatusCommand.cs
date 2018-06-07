@@ -97,6 +97,8 @@ namespace GitSharp.Commands {
 				Index.UpdateFileContentKey(fileName, newKey.ToString());
 				return File.StatusType.Modified;
 			}
+			
+			return File.StatusType.Ignored;
 		}
 	}
 }
