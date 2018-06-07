@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Author.cs" />
+    <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\StatusCommand.cs" />
     <Compile Include="Compressor.cs" />
     <Compile Include="File.cs" />
     <Compile Include="IndexFileOperations.cs" />
