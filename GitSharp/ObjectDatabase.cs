@@ -7,12 +7,8 @@ using GitSharp.Objects;
 
 namespace GitSharp {
 	internal static class ObjectDatabase {
-		private const string DefaultPath = ".git_sharp/objects";
-
-		static ObjectDatabase()
-		{
-			CreateObjectsDirectory();
-		}
+		public static readonly string DefaultPath =
+			Traverser.GitRootDirName + Path.DirectorySeparatorChar + "objects";
 
 		public static HashKey Store(Blob blob)
 		{
@@ -69,7 +65,7 @@ namespace GitSharp {
 		{
 			StreamWriter writer = null;
 			try {
-				FileStream fileStream = System.IO.File.Create(DefaultPath + "/" + fileName);
+				FileStream fileStream = System.IO.File.Create(DefaultPath + Path.DirectorySeparatorChar + fileName);
 				writer = new StreamWriter(fileStream);
 				writer.Write(content);
 			}
@@ -92,7 +88,7 @@ namespace GitSharp {
 		{
 			string content;
 			try {
-				StreamReader reader = new StreamReader(DefaultPath + "/" + fileName);
+				StreamReader reader = new StreamReader(DefaultPath + Path.DirectorySeparatorChar + fileName);
 				content = reader.ReadToEnd();
 			}
 			catch (Exception) {
@@ -101,20 +97,6 @@ namespace GitSharp {
 			}
 
 			return content;
-		}
-
-		private static void CreateObjectsDirectory()
-		{
-			if (Directory.Exists(DefaultPath)) {
-				return;
-			}
-			
-			try {
-				Directory.CreateDirectory(DefaultPath);
-			}
-			catch (Exception e) {
-				throw new Exception("Cannot create objects directory", e);
-			}
 		}
 	}
 }
