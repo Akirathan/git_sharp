@@ -18,6 +18,9 @@ namespace GitSharp {
 	/// 
 	/// </summary>
 	internal static class Index {
+        public static readonly string IndexPath
+	        = Traverser.GitRootDirName + Path.DirectorySeparatorChar + "index";
+		
 		private static Dictionary<string, Entry> _entries = new Dictionary<string, Entry>();
 		
 		static Index()
@@ -219,7 +222,6 @@ namespace GitSharp {
 		}
 
 		private static class Serializer {
-			private const string IndexPath = "index"; // TODO: ROOT_PATH 
 			
 			/// <summary>
 			/// Fills all the entries of Index.
