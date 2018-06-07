@@ -3,7 +3,7 @@ using System.IO;
 
 namespace GitSharp {
 	public static class Traverser {
-		private const string GitRootDirName = ".git_sharp";
+		public const string GitRootDirName = ".git_sharp";
 		
 		private static string _rootDirPath;
 
