@@ -41,9 +41,11 @@ namespace GitSharp {
 		{
 			List<string> files = new List<string>();
 			
+			files.AddRange(Directory.EnumerateFiles(GetRootDirPath()));
+			
 			IEnumerable<string> dirNames = Directory.EnumerateDirectories(GetRootDirPath());
 			foreach (string dirName in dirNames) {
-				if (dirName == GitRootDirName) {
+				if (dirName.Contains(GitRootDirName)) {
 					continue;
 				}
 				IEnumerable<string> dirFileNames =
@@ -82,7 +84,7 @@ namespace GitSharp {
 
 		private static string ConvertPathToRelative(string path)
 		{
-			return path.Substring(GetRootDirPath().Length - 1);
+			return path.Substring(GetRootDirPath().Length + 1);
 		}
 	}
 }
