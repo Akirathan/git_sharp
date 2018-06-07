@@ -3,8 +3,11 @@ using System.IO;
 
 namespace GitSharp.Commands {
 	internal class InitCommand : Command {
+		public static bool IsInitializing { get; private set; }
+		
 		public override void Process()
 		{
+			IsInitializing = true;
 			string rootDirPath = Traverser.GetRootDirPath();
 			if (rootDirPath != null) {
 				PrintTryingToReinitializeRepo(rootDirPath);
@@ -14,6 +17,7 @@ namespace GitSharp.Commands {
 			CreateRootDir();
 			CreateAllFilesDirectories();
 			PrintRepoInitialized();
+			IsInitializing = false;
 		}
 
 		private void PrintTryingToReinitializeRepo(string rootPath)

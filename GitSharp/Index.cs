@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using GitSharp.Commands;
 
 namespace GitSharp {
 	/// <summary>
@@ -228,6 +229,10 @@ namespace GitSharp {
 			/// </summary>
 			public static void ReadFromFile()
 			{
+				if (InitCommand.IsInitializing) {
+					return;
+				}
+				
 				using (StreamReader reader = new StreamReader(IndexPath)) {
 					string line = "";
 					while (line != null) {
