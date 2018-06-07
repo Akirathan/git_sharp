@@ -32,22 +32,26 @@ namespace GitSharp {
 			return enumeratedDir;
 		}
 		
+		/// <summary>
+		/// Returns all file relative names (tracked, untracked and ignored).
+		/// Note that it is not necessary to return absolute paths.
+		/// </summary>
+		/// <returns></returns>
 		public static IEnumerable<string> GetAllFiles()
 		{
 			List<string> files = new List<string>();
-			string currDir = Directory.GetCurrentDirectory();
 			
-			IEnumerable<string> dirNames = Directory.EnumerateDirectories(currDir);
+			IEnumerable<string> dirNames = Directory.EnumerateDirectories(GetRootDirPath());
 			foreach (string dirName in dirNames) {
 				if (dirName == GitRootDirName) {
 					continue;
 				}
-				IEnumerable<string> dirFiles =
+				IEnumerable<string> dirFileNames =
 					Directory.EnumerateFiles(dirName, "*", SearchOption.AllDirectories);
 				
-				files.AddRange(dirFiles);
+				files.AddRange(dirFileNames);
 			}
-			return files;
+			return ConvertPathsToRelative(files);
 		}
 
 		private static bool DirContainsGitDir(string dirPath)
@@ -59,6 +63,25 @@ namespace GitSharp {
 				}
 			}
 			return false;
+		}
+
+		private static IEnumerable<string> ConvertPathsToRelative(IEnumerable<string> paths)
+		{
+			List<string> list = new List<string>();
+			
+			foreach (string path in paths) {
+				if (Path.IsPathRooted(path)) {
+					list.Add(ConvertPathToRelative(path));
+				}
+				else {
+					list.Add(path);
+				}
+			}
+		}
+
+		private static string ConvertPathToRelative(string path)
+		{
+			return path.Substring(GetRootDirPath().Length - 1);
 		}
 	}
 }
