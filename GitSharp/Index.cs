@@ -65,12 +65,14 @@ namespace GitSharp {
 		
 		public static bool IsStaged(string fileName)
 		{
-			return GetWdirFileContentKey(fileName) == GetStageFileContentKey(fileName);
+			return GetWdirFileContentKey(fileName) == GetStageFileContentKey(fileName) &&
+			       GetStageFileContentKey(fileName) != GetRepoFileContentKey(fileName);
 		}
 
 		public static bool IsCommited(string fileName)
 		{
-			return GetStageFileContentKey(fileName) == GetRepoFileContentKey(fileName);
+			return GetWdirFileContentKey(fileName) == GetStageFileContentKey(fileName) &&
+			       GetStageFileContentKey(fileName) == GetRepoFileContentKey(fileName);
 		}
 
 		/// <summary>
