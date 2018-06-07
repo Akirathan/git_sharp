@@ -26,7 +26,7 @@ namespace GitSharp {
 				if (currDirInfo == null) {
 					return null;
 				}
-				enumeratedDir = currDirInfo.Name;
+				enumeratedDir = currDirInfo.FullName;
 			}
 			_rootDirPath = enumeratedDir;
 			return enumeratedDir;
@@ -58,7 +58,7 @@ namespace GitSharp {
 		{
 			IEnumerable<string> directories = Directory.EnumerateDirectories(dirPath);
 			foreach (string directory in directories) {
-				if (directory == GitRootDirName) {
+				if (directory.Contains(GitRootDirName)) {
 					return true;
 				}
 			}
@@ -77,6 +77,7 @@ namespace GitSharp {
 					list.Add(path);
 				}
 			}
+			return list;
 		}
 
 		private static string ConvertPathToRelative(string path)
