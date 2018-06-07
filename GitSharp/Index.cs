@@ -234,7 +234,7 @@ namespace GitSharp {
 				}
 				
 				using (StreamReader reader = new StreamReader(IndexPath)) {
-					string line = "";
+					string line = reader.ReadLine();
 					while (line != null) {
 						line = reader.ReadLine();
 						Entry entry = Entry.ParseFromLine(line);
