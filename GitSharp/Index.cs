@@ -92,6 +92,11 @@ namespace GitSharp {
 			
 		}
 
+		public static void Dispose()
+		{
+			Serializer.WriteToFile();
+		}
+
 		/// <summary>
 		/// Adds given file into the Index ie. starts tracking this file.
 		/// </summary>
