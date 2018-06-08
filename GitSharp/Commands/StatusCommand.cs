@@ -15,16 +15,17 @@ namespace GitSharp.Commands {
 			HashKey newKey = blob.Checksum;
 			string oldKey = Index.GetFileBlobKey(fileName);
 
-			if (newKey.Equals(oldKey)) {
-				if (Index.IsCommited(fileName)) {
-					return File.StatusType.Commited;
-				}
-				else if (Index.IsStaged(fileName)) {
-					return File.StatusType.Staged;
-				}
-			}
-			else {
+			if (!newKey.Equals(oldKey)) {
 				Index.UpdateFileContentKey(fileName, newKey.ToString());
+			}
+			
+            if (Index.IsCommited(fileName)) {
+                return File.StatusType.Commited;
+            }
+            if (Index.IsStaged(fileName)) {
+                return File.StatusType.Staged;
+            }
+			if (Index.IsModified(fileName)) {
 				return File.StatusType.Modified;
 			}
 			
