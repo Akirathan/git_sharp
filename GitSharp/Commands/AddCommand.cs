@@ -9,7 +9,16 @@ namespace GitSharp.Commands {
 		private string[] _args;
 		private IList<string> _encounteredIgnoredFiles = new List<string>();
 		private IList<string> _files = new List<string>();
-		private string _nonExistingFile;
+		private ISet<Option> _options = new HashSet<Option>();
+
+		private enum Option {
+			Force
+		}
+
+		public static void PrintHelp()
+		{
+			
+		}
 		
 		public AddCommand(string[] args)
 		{
@@ -19,7 +28,6 @@ namespace GitSharp.Commands {
 		public override void Process()
 		{
 			if (!ProcessArguments()) {
-				PrintNonExistingFileError();
 				return;
 			}
 
@@ -43,12 +51,31 @@ namespace GitSharp.Commands {
 						}
 					}
 					else {
-						_nonExistingFile = arg;
+						PrintNonExistingFileError(arg);
 						return false;
+					}
+				}
+				else if (IsOption(arg)) {
+					if (!ProcessOptionArgument(arg)) {
+						PrintHelp();
 					}
 				}
 			}
 			return true;
+		}
+
+		private bool IsOption(string s)
+		{
+			return s[0] == '-';
+		}
+		
+		private bool ProcessOptionArgument(string option)
+		{
+			if (option == "-f") {
+				_options.Add(Option.Force);
+				return true;
+			}
+			return false;
 		}
 
 		private bool ProcessDirectoryArgument(string dirPath)
@@ -59,16 +86,16 @@ namespace GitSharp.Commands {
 					_files.Add(file);
 				}
 				else {
-					_nonExistingFile = file;
+					PrintNonExistingFileError(file);
 					return false;
 				}
 			}
 			return true;
 		}
 		
-		private void PrintNonExistingFileError()
+		private void PrintNonExistingFileError(string nonExistingFile)
 		{
-			Console.Error.WriteLine($"Following path does not exist: {_nonExistingFile}");
+			Console.Error.WriteLine($"Following path does not exist: {nonExistingFile}");
 			Console.Error.WriteLine("Exiting...");
 		}
 		
