@@ -134,7 +134,11 @@ namespace GitSharp {
 
 		private static void AddEntry(Entry entry)
 		{
+			if (_entries.ContainsKey(entry.FileName)) {
+				throw new Exception("index format error: file already specified in index");
+			}
 			
+			_entries.Add(entry.FileName, entry);
 		}
 		
 		private static string GetWdirFileContentKey(string fileName)
