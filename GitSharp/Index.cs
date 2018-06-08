@@ -68,6 +68,12 @@ namespace GitSharp {
 		{
 			SetWdirFileContentKey(fileName, contentKey);
 		}
+
+		public static bool IsModified(string fileName)
+		{
+			return GetWdirFileContentKey(fileName) != GetStageFileContentKey(fileName) &&
+			       GetWdirFileContentKey(fileName) != Entry.KeyNullValue;
+		}
 		
 		public static bool IsStaged(string fileName)
 		{
