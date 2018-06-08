@@ -154,9 +154,7 @@ namespace GitSharp {
 		private static string GetStageFileContentKey(string fileName)
 		{
 			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			string stageContentKey = _entries[fileName].StageKey;
-			Debug.Assert(stageContentKey != Entry.KeyNullValue, "stage file content must be first set");
-			return stageContentKey;
+			return _entries[fileName].StageKey;
 		}
 		
 		/// <summary>
@@ -169,9 +167,7 @@ namespace GitSharp {
 		private static string GetRepoFileContentKey(string fileName)
 		{
 			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			string repoContentKey = _entries[fileName].RepoKey;
-			Debug.Assert(repoContentKey!= Entry.KeyNullValue, "repo file content must be first set");
-			return repoContentKey;
+			return _entries[fileName].RepoKey;
 		}
 		
 		private static void SetStageFileContentKey(string fileName, string key)
