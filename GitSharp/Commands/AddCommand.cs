@@ -131,6 +131,11 @@ namespace GitSharp.Commands {
 		private void AddFile(string fileName)
 		{
 			File.StatusType fileStatus = StatusCommand.ResolveFileStatus(fileName);
+			
+			if (fileStatus == File.StatusType.Untracked) {
+				Index.StartTrackingFile(fileName);
+			}
+			
 			switch (fileStatus) {
 				case File.StatusType.Untracked:
 				case File.StatusType.Modified:
