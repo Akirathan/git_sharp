@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using GitSharp.Commands;
 using GitSharp.Objects;
 using GitSharp.Hash;
 
@@ -10,7 +11,26 @@ namespace GitSharp {
 	internal class Program {
 		public static void Main(string[] args)
 		{
-			TestTreeStore();
+			GitMain();
+		}
+
+		private static void GitMain()
+		{
+			if (!IsRepositoryInitialized()) {
+				Console.Error.WriteLine("No git repository initialized, exiting...");
+				Environment.Exit(1);
+			}
+			
+			//AddCommand addCommand = new AddCommand(new string[]{"prd.txt"});
+			//addCommand.Process();
+			File.StatusType status = StatusCommand.ResolveFileStatus("prd.txt");
+			
+			Index.Dispose();
+		}
+
+		private static bool IsRepositoryInitialized()
+		{
+			return Traverser.GetRootDirPath() != null;
 		}
 
 		private static bool TestBlobStore()
