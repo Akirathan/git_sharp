@@ -70,13 +70,18 @@ namespace GitSharp {
 		public static bool IsStaged(string fileName)
 		{
 			return GetWdirFileContentKey(fileName) == GetStageFileContentKey(fileName) &&
-			       GetStageFileContentKey(fileName) != GetRepoFileContentKey(fileName);
+			       GetStageFileContentKey(fileName) != GetRepoFileContentKey(fileName) &&
+			       GetWdirFileContentKey(fileName) != Entry.KeyNullValue &&
+			       GetStageFileContentKey(fileName) != Entry.KeyNullValue;
 		}
 
 		public static bool IsCommited(string fileName)
 		{
 			return GetWdirFileContentKey(fileName) == GetStageFileContentKey(fileName) &&
-			       GetStageFileContentKey(fileName) == GetRepoFileContentKey(fileName);
+			       GetStageFileContentKey(fileName) == GetRepoFileContentKey(fileName) &&
+			       GetWdirFileContentKey(fileName) != Entry.KeyNullValue &&
+			       GetStageFileContentKey(fileName) != Entry.KeyNullValue &&
+			       GetRepoFileContentKey(fileName) != Entry.KeyNullValue;
 		}
 
 		/// <summary>
@@ -181,6 +186,8 @@ namespace GitSharp {
 		}
 
 		private class Entry {
+			public const string KeyNullValue = "0";
+			
 			public static Entry ParseFromLine(string line)
 			{
 				string[] lineItems = line.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
@@ -204,7 +211,7 @@ namespace GitSharp {
 				return lineBuilder.ToString();
 			}
 
-			public Entry(string fileName) : this(fileName, "0", "0", "0")
+			public Entry(string fileName) : this(fileName, KeyNullValue, KeyNullValue, KeyNullValue)
 			{
 			}
 
