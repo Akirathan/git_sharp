@@ -17,7 +17,7 @@ namespace GitSharp.Commands {
 
 		public static void PrintHelp()
 		{
-			
+			Console.WriteLine("Usage: \"git add [-f] <file|directory>\"");
 		}
 		
 		public AddCommand(string[] args)
@@ -62,11 +62,6 @@ namespace GitSharp.Commands {
 				}
 			}
 			return true;
-		}
-
-		private bool IsOption(string s)
-		{
-			return s[0] == '-';
 		}
 		
 		private bool ProcessOptionArgument(string option)
@@ -116,6 +111,11 @@ namespace GitSharp.Commands {
 		{
 			return s[0] != '-';
 		}
+		
+		private bool IsOption(string s)
+		{
+			return s[0] == '-';
+		}
 
 		private bool IsFile(string path)
 		{
@@ -134,7 +134,7 @@ namespace GitSharp.Commands {
 			switch (fileStatus) {
 				case File.StatusType.Untracked:
 				case File.StatusType.Modified:
-					HashKey key = CreateAndSaveBlob(fileName);
+					HashKey key = CreateAndStoreBlob(fileName);
 					Index.UpdateFileContentKey(fileName, key.ToString());
 					Index.StageFile(fileName);
 					break;
@@ -149,7 +149,7 @@ namespace GitSharp.Commands {
 			}
 		}
 
-		private HashKey CreateAndSaveBlob(string fileName)
+		private HashKey CreateAndStoreBlob(string fileName)
 		{
 			HashKey key;
 			using (StreamReader reader = new StreamReader(fileName)) {
