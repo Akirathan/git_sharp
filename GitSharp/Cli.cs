@@ -20,6 +20,7 @@ namespace GitSharp {
 				Array.Copy(args, 1, restOfArgs, 0, restOfArgs.Length);
 				return new AddCommand(restOfArgs);
 			}
+			return null;
 		}
 	}
 }
