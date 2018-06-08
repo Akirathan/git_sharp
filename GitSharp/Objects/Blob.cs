@@ -54,7 +54,7 @@ namespace GitSharp.Objects {
 		private string CreateBlobFileContent()
 		{
 			StringBuilder contentBuilder = new StringBuilder();
-			contentBuilder.AppendLine(BlobFileType);
+			contentBuilder.AppendLine(BlobFileType + " " + FileName);
 			contentBuilder.Append(FileContent);
 			return contentBuilder.ToString();
 		}
