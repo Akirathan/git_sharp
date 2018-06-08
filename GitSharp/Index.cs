@@ -41,13 +41,15 @@ namespace GitSharp {
 		public static bool Updated { get; private set; }
 
 		/// <summary>
-		/// Returns key to content of file in working directory version.
+		/// Returns key to blob generated from the given file in working directory version.
+		/// Note that returned checksum was generated not only from the content of the
+		/// file, but also from some header.
 		/// </summary>
 		/// <param name="fileName"></param>
 		/// <returns>
-		/// Key representing pointer to content of the file.
+		/// Key representing pointer to blob generated from the file.
 		/// </returns>
-		public static string GetFileContentKey(string fileName)
+		public static string GetFileBlobKey(string fileName)
 		{
 			return GetWdirFileContentKey(fileName);
 		}

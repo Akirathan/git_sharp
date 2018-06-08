@@ -11,7 +11,7 @@ namespace GitSharp.Commands {
 			}
 
 			HashKey newKey = ContentHasher.HashFileContent(fileName);
-			string oldKey = Index.GetFileContentKey(fileName);
+			string oldKey = Index.GetFileBlobKey(fileName);
 
 			if (newKey.Equals(oldKey)) {
 				if (Index.IsCommited(fileName)) {
