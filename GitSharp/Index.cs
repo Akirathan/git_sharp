@@ -140,17 +140,16 @@ namespace GitSharp {
 		private static string GetWdirFileContentKey(string fileName)
 		{
 			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			string wdirContentKey = null;
-			
-			Debug.Assert(wdirContentKey != null, "wdir file content must be first set");
+			string wdirContentKey = _entries[fileName].WdirKey;
+			Debug.Assert(wdirContentKey != Entry.KeyNullValue, "wdir file content must be first set");
 			return wdirContentKey;
 		}
 		
 		private static string GetStageFileContentKey(string fileName)
 		{
-			string stageContentKey = null;
-			
-			Debug.Assert(stageContentKey != null, "wdir file content must be first set");
+			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
+			string stageContentKey = _entries[fileName].StageKey;
+			Debug.Assert(stageContentKey != Entry.KeyNullValue, "stage file content must be first set");
 			return stageContentKey;
 		}
 		
@@ -164,25 +163,27 @@ namespace GitSharp {
 		private static string GetRepoFileContentKey(string fileName)
 		{
 			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			return null;
+			string repoContentKey = _entries[fileName].RepoKey;
+			Debug.Assert(repoContentKey!= Entry.KeyNullValue, "repo file content must be first set");
+			return repoContentKey;
 		}
 		
 		private static void SetStageFileContentKey(string fileName, string key)
 		{
 			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			
+			_entries[fileName].StageKey = key;
 		}
 		
 		private static void SetRepoFileContentKey(string fileName, string key)
 		{
 			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			
+			_entries[fileName].RepoKey = key;
 		}
 		
 		private static void SetWdirFileContentKey(string fileName, string key)
 		{
 			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			
+			_entries[fileName].WdirKey = key;
 		}
 
 		private class Entry {
