@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GitSharp.Hash;
+using GitSharp.Objects;
 
 namespace GitSharp.Commands {
 	internal class StatusCommand : Command {
@@ -10,7 +11,8 @@ namespace GitSharp.Commands {
 				return File.StatusType.Untracked;
 			}
 
-			HashKey newKey = ContentHasher.HashFileContent(fileName);
+			Blob blob = new Blob(fileName);
+			HashKey newKey = blob.Checksum;
 			string oldKey = Index.GetFileBlobKey(fileName);
 
 			if (newKey.Equals(oldKey)) {
