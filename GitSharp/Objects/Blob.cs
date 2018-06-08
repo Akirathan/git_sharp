@@ -1,11 +1,18 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using GitSharp.Hash;
 
 namespace GitSharp.Objects {
+	/// <summary>
+	/// Represents file blob object.
+	/// File blob object contains file header and file content.
+	/// Checksum method gives key which is used for storing and retrieving this blob
+	/// object from ObjectDatabase.
+	/// </summary>
 	internal class Blob : GitObject, IEquatable<Blob> {
 		private const string BlobFileType = "blob";
-		private string content;
+		private readonly string _blobFileContent;
 
 		public static Blob ParseFromString(string content)
 		{
@@ -15,42 +22,43 @@ namespace GitSharp.Objects {
 			}
 			return new Blob(reader.ReadToEnd());
 		}
-
-		public static string CreateBlobFileContent(Blob blob)
-		{
-			StringBuilder contentBuilder = new StringBuilder();
-			contentBuilder.AppendLine(BlobFileType);
-			contentBuilder.Append(blob.Content);
-			return contentBuilder.ToString();
-		}
 		
-		public Blob(string content)
+		public Blob(string fileName)
 		{
-			this.content = content;
+			FileName = fileName;
+			using (StreamReader reader = new StreamReader(fileName)) {
+				FileContent = reader.ReadToEnd();
+			}
+			_blobFileContent = CreateBlobFileContent();
+			Checksum = ContentHasher.HashContent(_blobFileContent);
 		}
 
-		public string Content {
-			get { return content; }
-		}
+		public string FileContent { get; }
+		
+		public string FileName { get; }
+
+		public HashKey Checksum { get; }
 
 		public bool Equals(Blob other)
 		{
-			if (ReferenceEquals(null, other)) return false;
-			if (ReferenceEquals(this, other)) return true;
-			return string.Equals(content, other.content);
+			if (other == null) return false;
+			if (this == other) return true;
+			return string.Equals(FileContent, other.FileContent);
 		}
 
-		public override bool Equals(object obj)
+		public void WriteToFile(string fileName)
 		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof(Blob)) return false;
-			return Equals((Blob) obj);
+			using (StreamWriter writer = new StreamWriter(fileName)) {
+				writer.Write(_blobFileContent);
+			}
 		}
 
-		public override int GetHashCode()
+		private string CreateBlobFileContent()
 		{
-			return content.GetHashCode();
+			StringBuilder contentBuilder = new StringBuilder();
+			contentBuilder.AppendLine(BlobFileType);
+			contentBuilder.Append(FileContent);
+			return contentBuilder.ToString();
 		}
 	}
 }
