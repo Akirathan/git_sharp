@@ -156,13 +156,8 @@ namespace GitSharp.Commands {
 
 		private HashKey CreateAndStoreBlob(string fileName)
 		{
-			HashKey key;
-			using (StreamReader reader = new StreamReader(fileName)) {
-				string content = reader.ReadToEnd();
-				Blob blob = new Blob(content);
-				key = ObjectDatabase.Store(blob);
-			}
-			return key;
+			Blob blob = new Blob(fileName);
+			return ObjectDatabase.Store(blob);
 		}
 	}
 }
