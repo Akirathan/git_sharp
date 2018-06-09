@@ -21,7 +21,8 @@ namespace GitSharp {
 	internal static class Index {
         public static readonly string IndexPath
 	        = Traverser.GitRootDirName + Path.DirectorySeparatorChar + "index";
-		
+
+		private const string RemovedFileKey = "-";
 		private static Dictionary<string, Entry> _entries = new Dictionary<string, Entry>();
 		
 		static Index()
@@ -110,6 +111,11 @@ namespace GitSharp {
 		public static void CommitFile(string fileName)
 		{
 			SetRepoFileContentKey(fileName, GetStageFileContentKey(fileName));
+		}
+
+		public static void FileRemovedFromWdir(string fileName)
+		{
+			SetWdirFileContentKey(fileName, RemovedFileKey);
 		}
 
 		/// <summary>
