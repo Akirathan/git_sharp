@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using GitSharp.Hash;
+using GitSharp.Objects;
 
 namespace GitSharp.Commands {
 	internal class CommitCommand : Command {
@@ -17,6 +19,20 @@ namespace GitSharp.Commands {
 				PrintHelp();
 				return;
 			}
+
+			TreeBuilder treeBuilder = new TreeBuilder();
+			
+			IEnumerable<string> stagedFiles = Index.GetStagedFiles();
+			foreach (string stagedFile in stagedFiles) {
+				string stagedFileKey = Index.GetStageFileContentKey(stagedFile);
+				Blob blob = ObjectDatabase.RetrieveBlob(HashKey.ParseFromString(stagedFileKey));
+				treeBuilder.AddBlob(blob);
+			}
+
+			Tree tree = treeBuilder.CreateImmutableTree();
+			ObjectDatabase.Store(tree);
+			
+			// TODO: create and save commit object
 		}
 
 		private void PrintHelp()
