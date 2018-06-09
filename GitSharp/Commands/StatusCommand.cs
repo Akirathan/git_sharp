@@ -36,6 +36,11 @@ namespace GitSharp.Commands {
 			return File.StatusType.Ignored;
 		}
 		
+        /// <summary>
+        /// Traverses all files from working directory and all files from index and
+        /// updates the index if file is modified (or deleted).
+        /// Finally prints status of all the files.
+        /// </summary>
 		public override void Process()
 		{
 			List<string> untrackedFiles = new List<string>();
@@ -56,12 +61,14 @@ namespace GitSharp.Commands {
 						break;
 					case File.StatusType.Modified:
 						modifiedFiles.Add(file);
+						UpdateModifiedFileInIndex(file);
 						break;
 					case File.StatusType.Staged:
 						stagedFiles.Add(file);
 						break;
                     case File.StatusType.Deleted:
 						deletedFiles.Add(file);
+	                    Index.FileRemovedFromWdir(file);
 	                    break;
 					case File.StatusType.Commited:
 					case File.StatusType.Ignored:
@@ -76,6 +83,12 @@ namespace GitSharp.Commands {
 			PrintUntrackedFiles(untrackedFiles);
 		}
 
+		private void UpdateModifiedFileInIndex(string fileName)
+		{
+			Blob blob = new Blob(fileName);
+			Index.UpdateFileContentKey(fileName, blob.Checksum.ToString());
+		}
+		
 		private void PrintModifiedAndDeletedFiles(IList<string> modifiedFiles, IList<string> deletedFiles)
 		{
 			if (modifiedFiles.Count == 0 && deletedFiles.Count == 0) {
