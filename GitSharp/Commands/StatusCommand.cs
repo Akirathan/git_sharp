@@ -35,6 +35,8 @@ namespace GitSharp.Commands {
         /// </summary>
 		public override void Process()
 		{
+            Index.Update();
+			
 			List<string> untrackedFiles = new List<string>();
 			List<string> modifiedFiles = new List<string>();
 			List<string> stagedFiles = new List<string>();
@@ -47,7 +49,6 @@ namespace GitSharp.Commands {
 			allFiles.UnionWith(trackedFiles);
 			
 			foreach (string file in allFiles) {
-				Index.Update();
 				
 				switch (ResolveFileStatus(file)) {
 					case File.StatusType.Untracked:
