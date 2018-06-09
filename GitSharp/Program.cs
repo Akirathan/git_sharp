@@ -11,46 +11,36 @@ namespace GitSharp {
 	internal class Program {
 		public static void Main(string[] args)
 		{
-			GitMain();
+			GitMain(args);
 		}
 
-		private static void GitMain()
+		private static void GitMain(string[] args)
 		{
-			if (!IsRepositoryInitialized()) {
+			Command command = Cli.ParseCommand(args);
+			if (command == null) {
+				PrintHelp();
+				Environment.Exit(1);
+			}
+
+			if (!(command is InitCommand) && !IsRepositoryInitialized()) {
 				Console.Error.WriteLine("No git repository initialized, exiting...");
 				Environment.Exit(1);
 			}
 			
-			//AddCommand addCommand = new AddCommand(new string[]{"prd.txt"});
-			//addCommand.Process();
-			File.StatusType status = StatusCommand.ResolveFileStatus("prd.txt");
+			command.Process();
 			
 			Index.Dispose();
+		}
+
+		private static void PrintHelp()
+		{
+			Console.WriteLine("Unrecognized command.");
+			Console.WriteLine("usage: \"git (init|status|add)\"");
 		}
 
 		private static bool IsRepositoryInitialized()
 		{
 			return Traverser.GetRootDirPath() != null;
-		}
-
-		private static bool TestBlobStore()
-		{
-			HashKey key = ObjectDatabase.Store(new Blob("bla"));
-			Blob blob = ObjectDatabase.RetrieveBlob(key);
-			return true;
-		}
-
-		private static bool TestTreeStore()
-		{
-			Blob blob = new Blob("content of a.txt");
-			HashKey blobKey = ObjectDatabase.Store(blob);
-			Tree.BlobEntry blobEntry = new Tree.BlobEntry(blobKey, "a.txt");
-			Tree tree = new Tree(new List<Tree.BlobEntry> {blobEntry}, null);
-
-			HashKey treeKey = ObjectDatabase.Store(tree);
-			Tree retrievedTree = ObjectDatabase.RetrieveTree(treeKey);
-			
-			return true;
 		}
 	}
 }
