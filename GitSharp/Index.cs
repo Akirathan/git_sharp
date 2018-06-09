@@ -55,6 +55,12 @@ namespace GitSharp {
 		{
 			return GetWdirFileContentKey(fileName);
 		}
+		
+		public static string GetStageFileContentKey(string fileName)
+		{
+			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
+			return _entries[fileName].StageKey;
+		}
 
 		/// <summary>
 		/// Returns all the files that are in the index ie. all tracked files.
@@ -215,12 +221,6 @@ namespace GitSharp {
 			string wdirContentKey = _entries[fileName].WdirKey;
 			Debug.Assert(wdirContentKey != Entry.KeyNullValue, "wdir file content must be first set");
 			return wdirContentKey;
-		}
-		
-		private static string GetStageFileContentKey(string fileName)
-		{
-			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			return _entries[fileName].StageKey;
 		}
 		
 		/// <summary>
