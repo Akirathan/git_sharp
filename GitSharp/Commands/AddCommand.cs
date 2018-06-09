@@ -138,12 +138,12 @@ namespace GitSharp.Commands {
 		/// Supposes that fileName is existing file
 		private void AddFile(string fileName)
 		{
-			Index.UpdateFileInWdir(fileName);
-			File.StatusType fileStatus = Index.ResolveFileStatus(fileName);
-			
-			if (fileStatus == File.StatusType.Untracked) {
+			if (!Index.ContainsFile(fileName)) {
 				Index.StartTrackingFile(fileName);
 			}
+			
+			Index.UpdateFileInWdir(fileName);
+			File.StatusType fileStatus = Index.ResolveFileStatus(fileName);
 			
 			switch (fileStatus) {
 				case File.StatusType.Untracked:
