@@ -8,13 +8,8 @@
 		{
 			return null;
 		}
-		
-		public TreeBuilder FindOrCreateSubTree(string[] dirNames)
-		{
-			return null;
-		}
 
-		public void AddBlob(Blob blob)
+		public void AddBlobToTreeHierarchy(Blob blob)
 		{
 			
 		}
