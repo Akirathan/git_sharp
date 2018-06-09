@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using GitSharp.Commands;
+using GitSharp.Objects;
 
 namespace GitSharp {
 	/// <summary>
@@ -21,7 +22,8 @@ namespace GitSharp {
 	internal static class Index {
         public static readonly string IndexPath
 	        = Traverser.GitRootDirName + Path.DirectorySeparatorChar + "index";
-		
+
+		private const string RemovedFileKey = "-";
 		private static Dictionary<string, Entry> _entries = new Dictionary<string, Entry>();
 		
 		static Index()
@@ -54,19 +56,18 @@ namespace GitSharp {
 			return GetWdirFileContentKey(fileName);
 		}
 
+		/// <summary>
+		/// Returns all the files that are in the index ie. all tracked files.
+		/// </summary>
+		/// <returns></returns>
+		public static IEnumerable<string> GetAllTrackedFiles()
+		{
+			return _entries.Keys;
+		}
+		
 		public static IEnumerable<string> GetStagedFiles()
 		{
 			return null; // TODO:
-		}
-		
-		/// <summary>
-		/// Sets version of the content of given file.
-		/// </summary>
-		/// <param name="fileName"></param>
-		/// <param name="contentKey">pointer to content of the file</param>
-		public static void UpdateFileContentKey(string fileName, string contentKey)
-		{
-			SetWdirFileContentKey(fileName, contentKey);
 		}
 
 		public static bool IsModified(string fileName)
@@ -90,6 +91,38 @@ namespace GitSharp {
 			       GetWdirFileContentKey(fileName) != Entry.KeyNullValue &&
 			       GetStageFileContentKey(fileName) != Entry.KeyNullValue &&
 			       GetRepoFileContentKey(fileName) != Entry.KeyNullValue;
+		}
+
+		private static bool IsDeletedInWdir(string fileName)
+		{
+			return _entries[fileName].WdirKey == RemovedFileKey;
+		}
+		
+		/// <summary>
+		/// Supposes that index is updated (at least for given file)
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <returns></returns>
+		public static File.StatusType ResolveFileStatus(string fileName)
+		{
+			if (!ContainsFile(fileName)) {
+				return File.StatusType.Untracked;
+			}
+
+            if (IsCommited(fileName)) {
+                return File.StatusType.Commited;
+            }
+            if (IsStaged(fileName)) {
+                return File.StatusType.Staged;
+            }
+			if (IsDeletedInWdir(fileName)) {
+				return File.StatusType.Deleted;
+			}
+			if (IsModified(fileName)) {
+				return File.StatusType.Modified;
+			}
+			
+			return File.StatusType.Ignored;
 		}
 
 		/// <summary>
@@ -131,8 +164,35 @@ namespace GitSharp {
 		public static void Update()
 		{
 			Debug.Assert(Updated == false, "Update should be called just once.");
-			// ...
+			foreach (Entry entry in _entries.Values) {
+				UpdateEntryIfNecessary(entry);
+			}
 			Updated = true;
+		}
+		
+		/// <summary>
+		/// Updates wdir content version of given file
+		/// </summary>
+		/// <param name="fileName"></param>
+		public static void UpdateFileInWdir(string fileName)
+		{
+			Debug.Assert(_entries.ContainsKey(fileName));
+			UpdateEntryIfNecessary(_entries[fileName]);
+		}
+		
+		private static void UpdateEntryIfNecessary(Entry entry)
+		{
+			if (!System.IO.File.Exists(entry.FileName)) {
+				entry.WdirKey = RemovedFileKey;
+				return;
+			}
+			
+			Blob blob = new Blob(entry.FileName);
+			string oldKey = entry.WdirKey;
+			string newKey = blob.Checksum.ToString();
+			if (oldKey != newKey) {
+				entry.WdirKey = newKey;
+			}
 		}
 		
 		private static ICollection<Entry> GetEntries()

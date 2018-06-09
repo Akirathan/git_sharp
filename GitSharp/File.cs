@@ -12,6 +12,7 @@ namespace GitSharp {
 			Modified,
 			Staged,
 			Commited,
+			Deleted,
 			Ignored
 		}
 

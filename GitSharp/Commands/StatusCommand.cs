@@ -5,42 +5,30 @@ using GitSharp.Objects;
 
 namespace GitSharp.Commands {
 	internal class StatusCommand : Command {
-		public static File.StatusType ResolveFileStatus(string fileName)
-		{
-			if (!Index.ContainsFile(fileName)) {
-				return File.StatusType.Untracked;
-			}
-
-			Blob blob = new Blob(fileName);
-			HashKey newKey = blob.Checksum;
-			string oldKey = Index.GetFileBlobKey(fileName);
-
-			if (!newKey.Equals(oldKey)) {
-				Index.UpdateFileContentKey(fileName, newKey.ToString());
-			}
-			
-            if (Index.IsCommited(fileName)) {
-                return File.StatusType.Commited;
-            }
-            if (Index.IsStaged(fileName)) {
-                return File.StatusType.Staged;
-            }
-			if (Index.IsModified(fileName)) {
-				return File.StatusType.Modified;
-			}
-			
-			return File.StatusType.Ignored;
-		}
 		
+        /// <summary>
+        /// Traverses all files from working directory and all files from index and
+        /// updates the index if file is modified (or deleted).
+        /// Finally prints status of all the files.
+        /// </summary>
 		public override void Process()
 		{
+            Index.Update();
+			
 			List<string> untrackedFiles = new List<string>();
 			List<string> modifiedFiles = new List<string>();
 			List<string> stagedFiles = new List<string>();
+			List<string> deletedFiles = new List<string>();
 			
-			IEnumerable<string> allFiles = Traverser.GetAllFiles();
+			IEnumerable<string> wdirFiles = Traverser.GetAllWdirFiles();
+			IEnumerable<string> trackedFiles = Index.GetAllTrackedFiles();
+			
+			ISet<string> allFiles = new HashSet<string>(wdirFiles);
+			allFiles.UnionWith(trackedFiles);
+			
 			foreach (string file in allFiles) {
-				switch (ResolveFileStatus(file)) {
+				
+				switch (Index.ResolveFileStatus(file)) {
 					case File.StatusType.Untracked:
 						untrackedFiles.Add(file);
 						break;
@@ -50,6 +38,9 @@ namespace GitSharp.Commands {
 					case File.StatusType.Staged:
 						stagedFiles.Add(file);
 						break;
+                    case File.StatusType.Deleted:
+						deletedFiles.Add(file);
+	                    break;
 					case File.StatusType.Commited:
 					case File.StatusType.Ignored:
 						break;
@@ -58,22 +49,25 @@ namespace GitSharp.Commands {
 				}
 			}
 			
-			PrintModifiedFiles(modifiedFiles);
+			PrintModifiedAndDeletedFiles(modifiedFiles, deletedFiles);
 			PrintStagedFiles(stagedFiles);
 			PrintUntrackedFiles(untrackedFiles);
 		}
-
-		private void PrintModifiedFiles(IList<string> modifiedFiles)
+		
+		private void PrintModifiedAndDeletedFiles(IList<string> modifiedFiles, IList<string> deletedFiles)
 		{
-			if (modifiedFiles.Count == 0) {
+			if (modifiedFiles.Count == 0 && deletedFiles.Count == 0) {
 				Console.WriteLine("Working tree clean - no modified files");
 			}
 			else {
                 Console.WriteLine("Changes not staged for commit (modified files): ");
                 Console.WriteLine("  (use \"git add <file>\" to update what will be commited)");
                 foreach (string modifiedFile in modifiedFiles) {
-                    Console.WriteLine($"    {modifiedFile}");
+                    Console.WriteLine($"    modified: {modifiedFile}");
                 }
+				foreach (string deletedFile in deletedFiles) {
+                    Console.WriteLine($"    deleted: {deletedFile}");
+				}
 			}
 		}
 

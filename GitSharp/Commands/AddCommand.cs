@@ -50,6 +50,9 @@ namespace GitSharp.Commands {
 							return false;
 						}
 					}
+					else if (FileDeletedFromWdir(arg)) {
+						_files.Add(arg);
+					}
 					else {
 						PrintNonExistingFileError(arg);
 						return false;
@@ -126,26 +129,34 @@ namespace GitSharp.Commands {
 		{
 			return Directory.Exists(path);
 		}
+		
+		private bool FileDeletedFromWdir(string fileName)
+		{
+			return Index.ContainsFile(fileName) && !System.IO.File.Exists(fileName);
+		}
 
 		/// Supposes that fileName is existing file
 		private void AddFile(string fileName)
 		{
-			File.StatusType fileStatus = StatusCommand.ResolveFileStatus(fileName);
-			
-			if (fileStatus == File.StatusType.Untracked) {
+			if (!Index.ContainsFile(fileName)) {
 				Index.StartTrackingFile(fileName);
 			}
+			
+			Index.UpdateFileInWdir(fileName);
+			File.StatusType fileStatus = Index.ResolveFileStatus(fileName);
 			
 			switch (fileStatus) {
 				case File.StatusType.Untracked:
 				case File.StatusType.Modified:
-					HashKey key = CreateAndStoreBlob(fileName);
-					Index.UpdateFileContentKey(fileName, key.ToString());
+					CreateAndStoreBlob(fileName);
 					Index.StageFile(fileName);
 					break;
 				case File.StatusType.Staged:
 				case File.StatusType.Commited:
 					break;
+                case File.StatusType.Deleted:
+	                Index.StageFile(fileName);
+                    break;
 				case File.StatusType.Ignored:
 					_encounteredIgnoredFiles.Add(fileName);
 					break;
