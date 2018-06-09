@@ -71,22 +71,25 @@ namespace GitSharp.Commands {
 				}
 			}
 			
-			PrintModifiedFiles(modifiedFiles);
+			PrintModifiedAndDeletedFiles(modifiedFiles, deletedFiles);
 			PrintStagedFiles(stagedFiles);
 			PrintUntrackedFiles(untrackedFiles);
 		}
 
-		private void PrintModifiedFiles(IList<string> modifiedFiles)
+		private void PrintModifiedAndDeletedFiles(IList<string> modifiedFiles, IList<string> deletedFiles)
 		{
-			if (modifiedFiles.Count == 0) {
+			if (modifiedFiles.Count == 0 && deletedFiles.Count == 0) {
 				Console.WriteLine("Working tree clean - no modified files");
 			}
 			else {
                 Console.WriteLine("Changes not staged for commit (modified files): ");
                 Console.WriteLine("  (use \"git add <file>\" to update what will be commited)");
                 foreach (string modifiedFile in modifiedFiles) {
-                    Console.WriteLine($"    {modifiedFile}");
+                    Console.WriteLine($"    modified: {modifiedFile}");
                 }
+				foreach (string deletedFile in deletedFiles) {
+                    Console.WriteLine($"    deleted: {deletedFile}");
+				}
 			}
 		}
 
