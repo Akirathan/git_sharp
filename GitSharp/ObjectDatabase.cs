@@ -19,8 +19,8 @@ namespace GitSharp {
 
 		public static HashKey Store(Tree tree)
 		{
-			string treeFileContent = Tree.CreateTreeFileContent(tree);
-			HashKey key = ContentHasher.HashContent(treeFileContent);
+			string treeFileContent = tree.GetGitObjectFileContent();
+			HashKey key = tree.GetChecksum();
 			WriteObjectContentToFile(treeFileContent, key.ToString());
 			return key;
 		}

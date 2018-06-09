@@ -9,6 +9,8 @@ namespace GitSharp.Objects {
 		private const string TreeFileType = "tree";
 		private readonly List<TreeEntry> _treeEntries;
 		private readonly List<BlobEntry> _blobEntries;
+		private readonly string _treeObjectFileContent;
+		private readonly HashKey _checksum;
 
 		/// <summary>
 		/// Parses tree from given string. Suppose that string represents content
@@ -51,21 +53,6 @@ namespace GitSharp.Objects {
 			
 			return new Tree(blobEntries, treeEntries);
 		}
-
-		public static string CreateTreeFileContent(Tree tree)
-		{
-			StringBuilder contentBuilder = new StringBuilder();
-			
-			contentBuilder.AppendLine(TreeFileType);
-            foreach (BlobEntry blobEntry in tree.GetBlobEntries()) {
-                contentBuilder.AppendLine(blobEntry.ToString());
-            }
-            foreach (TreeEntry treeEntry in tree.GetTreeEntries()) {
-                contentBuilder.AppendLine(treeEntry.ToString());
-            }
-
-			return contentBuilder.ToString();
-		}
 		
 		public Tree(List<BlobEntry> blobEntries, List<TreeEntry> treeEntries)
 		{
@@ -82,6 +69,9 @@ namespace GitSharp.Objects {
 			else {
                 _treeEntries = treeEntries;
 			}
+
+			_treeObjectFileContent = CreateTreeFileContent();
+			_checksum = ContentHasher.HashContent(_treeObjectFileContent);
 		}
 
 		public List<BlobEntry> GetBlobEntries()
@@ -93,15 +83,35 @@ namespace GitSharp.Objects {
 		{
 			return _treeEntries;
 		}
-
-		public Tree FindOrCreateSubTree(string[] dirNames)
+		
+		public override string GetGitObjectFileContent()
 		{
-			return null;
+			return _treeObjectFileContent;
 		}
 
+		public override HashKey GetChecksum()
+		{
+			return _checksum;
+		}
+		
 		public void Checkout()
 		{
 			
+		}
+
+		private string CreateTreeFileContent()
+		{
+			StringBuilder contentBuilder = new StringBuilder();
+			
+			contentBuilder.AppendLine(TreeFileType);
+            foreach (BlobEntry blobEntry in _blobEntries) {
+                contentBuilder.AppendLine(blobEntry.ToString());
+            }
+            foreach (TreeEntry treeEntry in _treeEntries) {
+                contentBuilder.AppendLine(treeEntry.ToString());
+            }
+
+			return contentBuilder.ToString();
 		}
 
 		public struct BlobEntry {
