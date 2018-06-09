@@ -33,11 +33,12 @@ namespace GitSharp {
 		}
 		
 		/// <summary>
-		/// Returns all file relative names (tracked, untracked and ignored).
+		/// Returns all file relative names (tracked, untracked and ignored) that
+		/// are present in working directory.
 		/// Note that it is not necessary to return absolute paths.
 		/// </summary>
 		/// <returns></returns>
-		public static IEnumerable<string> GetAllFiles()
+		public static IEnumerable<string> GetAllWdirFiles()
 		{
 			List<string> files = new List<string>();
 			
