@@ -138,6 +138,7 @@ namespace GitSharp.Commands {
 		/// Supposes that fileName is existing file
 		private void AddFile(string fileName)
 		{
+			Index.UpdateFileInWdir(fileName);
 			File.StatusType fileStatus = StatusCommand.ResolveFileStatus(fileName);
 			
 			if (fileStatus == File.StatusType.Untracked) {
@@ -147,15 +148,13 @@ namespace GitSharp.Commands {
 			switch (fileStatus) {
 				case File.StatusType.Untracked:
 				case File.StatusType.Modified:
-					HashKey key = CreateAndStoreBlob(fileName);
-					Index.UpdateFileContentKey(fileName, key.ToString());
+					CreateAndStoreBlob(fileName);
 					Index.StageFile(fileName);
 					break;
 				case File.StatusType.Staged:
 				case File.StatusType.Commited:
 					break;
                 case File.StatusType.Deleted:
-	                Index.FileRemovedFromWdir(fileName);
 	                Index.StageFile(fileName);
                     break;
 				case File.StatusType.Ignored:
