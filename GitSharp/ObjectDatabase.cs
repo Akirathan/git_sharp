@@ -12,7 +12,7 @@ namespace GitSharp {
 
 		public static HashKey Store(Blob blob)
 		{
-			HashKey key = blob.Checksum;
+			HashKey key = blob.GetChecksum();
 			WriteObjectContentToFile(blob.GetGitObjectFileContent(), key.ToString());
 			return key;
 		}
