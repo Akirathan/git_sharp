@@ -47,7 +47,7 @@ namespace GitSharp.Commands {
 			allFiles.UnionWith(trackedFiles);
 			
 			foreach (string file in allFiles) {
-				UpdateIndexForFileIfNecessary(file);
+				Index.Update();
 				
 				switch (ResolveFileStatus(file)) {
 					case File.StatusType.Untracked:
@@ -55,7 +55,6 @@ namespace GitSharp.Commands {
 						break;
 					case File.StatusType.Modified:
 						modifiedFiles.Add(file);
-						UpdateModifiedFileInIndex(file);
 						break;
 					case File.StatusType.Staged:
 						stagedFiles.Add(file);
@@ -75,22 +74,6 @@ namespace GitSharp.Commands {
 			PrintModifiedAndDeletedFiles(modifiedFiles, deletedFiles);
 			PrintStagedFiles(stagedFiles);
 			PrintUntrackedFiles(untrackedFiles);
-		}
-
-		private void UpdateIndexForFileIfNecessary(string fileName)
-		{
-			Blob blob = new Blob(fileName);
-			string oldKey = Index.GetFileBlobKey(fileName);
-			string newKey = blob.Checksum.ToString();
-			if (oldKey != newKey) {
-				Index.UpdateFileContentKey(fileName, newKey);
-			}
-		}
-
-		private void UpdateModifiedFileInIndex(string fileName)
-		{
-			Blob blob = new Blob(fileName);
-			Index.UpdateFileContentKey(fileName, blob.Checksum.ToString());
 		}
 		
 		private void PrintModifiedAndDeletedFiles(IList<string> modifiedFiles, IList<string> deletedFiles)
