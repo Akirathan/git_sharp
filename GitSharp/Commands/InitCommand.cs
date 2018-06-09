@@ -40,7 +40,7 @@ namespace GitSharp.Commands {
 		private void CreateAllFilesDirectories()
 		{
 			CreateDirectory(ObjectDatabase.DefaultPath);
-			CreateFile(Index.IndexPath);	
+			CreateFile(Index.IndexPath);
 		}
 
 		private void CreateDirectory(string dirName)
@@ -56,7 +56,7 @@ namespace GitSharp.Commands {
 		private void CreateFile(string fileName)
 		{
 			try {
-				System.IO.File.Create(fileName);
+				System.IO.File.Create(fileName).Close();
 			}
 			catch (Exception e) {
 				throw new Exception($"Cannot create file {fileName}", e);
