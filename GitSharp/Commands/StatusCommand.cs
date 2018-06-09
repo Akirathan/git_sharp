@@ -11,6 +11,10 @@ namespace GitSharp.Commands {
 				return File.StatusType.Untracked;
 			}
 
+			if (Index.ContainsFile(fileName) && !System.IO.File.Exists(fileName)) {
+				return File.StatusType.Deleted;
+			}
+
 			Blob blob = new Blob(fileName);
 			HashKey newKey = blob.Checksum;
 			string oldKey = Index.GetFileBlobKey(fileName);
@@ -37,8 +41,14 @@ namespace GitSharp.Commands {
 			List<string> untrackedFiles = new List<string>();
 			List<string> modifiedFiles = new List<string>();
 			List<string> stagedFiles = new List<string>();
+			List<string> deletedFiles = new List<string>();
 			
-			IEnumerable<string> allFiles = Traverser.GetAllFiles();
+			IEnumerable<string> wdirFiles = Traverser.GetAllWdirFiles();
+			IEnumerable<string> trackedFiles = Index.GetAllTrackedFiles();
+			
+			ISet<string> allFiles = new HashSet<string>(wdirFiles);
+			allFiles.UnionWith(trackedFiles);
+			
 			foreach (string file in allFiles) {
 				switch (ResolveFileStatus(file)) {
 					case File.StatusType.Untracked:
@@ -50,6 +60,9 @@ namespace GitSharp.Commands {
 					case File.StatusType.Staged:
 						stagedFiles.Add(file);
 						break;
+                    case File.StatusType.Deleted:
+						deletedFiles.Add(file);
+	                    break;
 					case File.StatusType.Commited:
 					case File.StatusType.Ignored:
 						break;
