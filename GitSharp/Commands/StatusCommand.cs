@@ -11,18 +11,6 @@ namespace GitSharp.Commands {
 				return File.StatusType.Untracked;
 			}
 
-			if (Index.ContainsFile(fileName) && !System.IO.File.Exists(fileName)) {
-				return File.StatusType.Deleted;
-			}
-
-			Blob blob = new Blob(fileName);
-			HashKey newKey = blob.Checksum;
-			string oldKey = Index.GetFileBlobKey(fileName);
-
-			if (!newKey.Equals(oldKey)) {
-				Index.UpdateFileContentKey(fileName, newKey.ToString());
-			}
-			
             if (Index.IsCommited(fileName)) {
                 return File.StatusType.Commited;
             }
@@ -31,6 +19,10 @@ namespace GitSharp.Commands {
             }
 			if (Index.IsModified(fileName)) {
 				return File.StatusType.Modified;
+			}
+			
+			if (Index.ContainsFile(fileName) && !System.IO.File.Exists(fileName)) {
+				return File.StatusType.Deleted;
 			}
 			
 			return File.StatusType.Ignored;
