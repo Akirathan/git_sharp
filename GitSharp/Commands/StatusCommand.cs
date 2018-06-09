@@ -5,28 +5,6 @@ using GitSharp.Objects;
 
 namespace GitSharp.Commands {
 	internal class StatusCommand : Command {
-		public static File.StatusType ResolveFileStatus(string fileName)
-		{
-			if (!Index.ContainsFile(fileName)) {
-				return File.StatusType.Untracked;
-			}
-
-            if (Index.IsCommited(fileName)) {
-                return File.StatusType.Commited;
-            }
-            if (Index.IsStaged(fileName)) {
-                return File.StatusType.Staged;
-            }
-			if (Index.IsModified(fileName)) {
-				return File.StatusType.Modified;
-			}
-			
-			if (Index.ContainsFile(fileName) && !System.IO.File.Exists(fileName)) {
-				return File.StatusType.Deleted;
-			}
-			
-			return File.StatusType.Ignored;
-		}
 		
         /// <summary>
         /// Traverses all files from working directory and all files from index and
@@ -50,7 +28,7 @@ namespace GitSharp.Commands {
 			
 			foreach (string file in allFiles) {
 				
-				switch (ResolveFileStatus(file)) {
+				switch (Index.ResolveFileStatus(file)) {
 					case File.StatusType.Untracked:
 						untrackedFiles.Add(file);
 						break;

@@ -139,7 +139,7 @@ namespace GitSharp.Commands {
 		private void AddFile(string fileName)
 		{
 			Index.UpdateFileInWdir(fileName);
-			File.StatusType fileStatus = StatusCommand.ResolveFileStatus(fileName);
+			File.StatusType fileStatus = Index.ResolveFileStatus(fileName);
 			
 			if (fileStatus == File.StatusType.Untracked) {
 				Index.StartTrackingFile(fileName);

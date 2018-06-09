@@ -70,15 +70,6 @@ namespace GitSharp {
 			return null; // TODO:
 		}
 
-		/// <summary>
-		/// Updates wdir content version of given file
-		/// </summary>
-		/// <param name="fileName"></param>
-		public static void UpdateFileInWdir(string fileName)
-		{
-			UpdateEntryIfNecessary(_entries[fileName]);
-		}
-
 		public static bool IsModified(string fileName)
 		{
 			return GetWdirFileContentKey(fileName) != GetStageFileContentKey(fileName) &&
@@ -100,6 +91,29 @@ namespace GitSharp {
 			       GetWdirFileContentKey(fileName) != Entry.KeyNullValue &&
 			       GetStageFileContentKey(fileName) != Entry.KeyNullValue &&
 			       GetRepoFileContentKey(fileName) != Entry.KeyNullValue;
+		}
+		
+		public static File.StatusType ResolveFileStatus(string fileName)
+		{
+			if (!ContainsFile(fileName)) {
+				return File.StatusType.Untracked;
+			}
+
+            if (IsCommited(fileName)) {
+                return File.StatusType.Commited;
+            }
+            if (IsStaged(fileName)) {
+                return File.StatusType.Staged;
+            }
+			if (IsModified(fileName)) {
+				return File.StatusType.Modified;
+			}
+			
+			if (ContainsFile(fileName) && !System.IO.File.Exists(fileName)) {
+				return File.StatusType.Deleted;
+			}
+			
+			return File.StatusType.Ignored;
 		}
 
 		/// <summary>
@@ -145,6 +159,15 @@ namespace GitSharp {
 				UpdateEntryIfNecessary(entry);
 			}
 			Updated = true;
+		}
+		
+		/// <summary>
+		/// Updates wdir content version of given file
+		/// </summary>
+		/// <param name="fileName"></param>
+		public static void UpdateFileInWdir(string fileName)
+		{
+			UpdateEntryIfNecessary(_entries[fileName]);
 		}
 		
 		private static void UpdateEntryIfNecessary(Entry entry)
