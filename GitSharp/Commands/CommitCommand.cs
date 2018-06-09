@@ -24,15 +24,20 @@ namespace GitSharp.Commands {
 			
 			IEnumerable<string> stagedFiles = Index.GetStagedFiles();
 			foreach (string stagedFile in stagedFiles) {
-				string stagedFileKey = Index.GetStageFileContentKey(stagedFile);
-				Blob blob = ObjectDatabase.RetrieveBlob(HashKey.ParseFromString(stagedFileKey));
-				treeBuilder.AddBlob(blob);
+				Blob blob = GetStagedFileBlob(stagedFile);
+				treeBuilder.AddBlobToTreeHierarchy(blob);
 			}
 
 			Tree tree = treeBuilder.CreateImmutableTree();
 			ObjectDatabase.Store(tree);
 			
 			// TODO: create and save commit object
+		}
+
+		private Blob GetStagedFileBlob(string stagedFileName)
+		{
+            string stagedFileKey = Index.GetStageFileContentKey(stagedFileName);
+            return ObjectDatabase.RetrieveBlob(HashKey.ParseFromString(stagedFileKey));
 		}
 
 		private void PrintHelp()
