@@ -61,7 +61,6 @@ namespace GitSharp.Commands {
 						break;
                     case File.StatusType.Deleted:
 						deletedFiles.Add(file);
-	                    Index.FileRemovedFromWdir(file);
 	                    break;
 					case File.StatusType.Commited:
 					case File.StatusType.Ignored:
