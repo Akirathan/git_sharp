@@ -12,9 +12,8 @@ namespace GitSharp {
 
 		public static HashKey Store(Blob blob)
 		{
-			string blobFileContent = Blob.CreateBlobFileContent(blob);
-			HashKey key = ContentHasher.HashContent(blobFileContent);
-			WriteObjectContentToFile(blobFileContent, key.ToString());
+			HashKey key = blob.Checksum;
+			WriteObjectContentToFile(blob.BlobContent, key.ToString());
 			return key;
 		}
 

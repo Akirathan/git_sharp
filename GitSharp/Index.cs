@@ -41,13 +41,15 @@ namespace GitSharp {
 		public static bool Updated { get; private set; }
 
 		/// <summary>
-		/// Returns key to content of file in working directory version.
+		/// Returns key to blob generated from the given file in working directory version.
+		/// Note that returned checksum was generated not only from the content of the
+		/// file, but also from some header.
 		/// </summary>
 		/// <param name="fileName"></param>
 		/// <returns>
-		/// Key representing pointer to content of the file.
+		/// Key representing pointer to blob generated from the file.
 		/// </returns>
-		public static string GetFileContentKey(string fileName)
+		public static string GetFileBlobKey(string fileName)
 		{
 			return GetWdirFileContentKey(fileName);
 		}
@@ -66,17 +68,28 @@ namespace GitSharp {
 		{
 			SetWdirFileContentKey(fileName, contentKey);
 		}
+
+		public static bool IsModified(string fileName)
+		{
+			return GetWdirFileContentKey(fileName) != GetStageFileContentKey(fileName) &&
+			       GetWdirFileContentKey(fileName) != Entry.KeyNullValue;
+		}
 		
 		public static bool IsStaged(string fileName)
 		{
 			return GetWdirFileContentKey(fileName) == GetStageFileContentKey(fileName) &&
-			       GetStageFileContentKey(fileName) != GetRepoFileContentKey(fileName);
+			       GetStageFileContentKey(fileName) != GetRepoFileContentKey(fileName) &&
+			       GetWdirFileContentKey(fileName) != Entry.KeyNullValue &&
+			       GetStageFileContentKey(fileName) != Entry.KeyNullValue;
 		}
 
 		public static bool IsCommited(string fileName)
 		{
 			return GetWdirFileContentKey(fileName) == GetStageFileContentKey(fileName) &&
-			       GetStageFileContentKey(fileName) == GetRepoFileContentKey(fileName);
+			       GetStageFileContentKey(fileName) == GetRepoFileContentKey(fileName) &&
+			       GetWdirFileContentKey(fileName) != Entry.KeyNullValue &&
+			       GetStageFileContentKey(fileName) != Entry.KeyNullValue &&
+			       GetRepoFileContentKey(fileName) != Entry.KeyNullValue;
 		}
 
 		/// <summary>
@@ -129,24 +142,25 @@ namespace GitSharp {
 
 		private static void AddEntry(Entry entry)
 		{
+			if (_entries.ContainsKey(entry.FileName)) {
+				throw new Exception("index format error: file already specified in index");
+			}
 			
+			_entries.Add(entry.FileName, entry);
 		}
 		
 		private static string GetWdirFileContentKey(string fileName)
 		{
 			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			string wdirContentKey = null;
-			
-			Debug.Assert(wdirContentKey != null, "wdir file content must be first set");
+			string wdirContentKey = _entries[fileName].WdirKey;
+			Debug.Assert(wdirContentKey != Entry.KeyNullValue, "wdir file content must be first set");
 			return wdirContentKey;
 		}
 		
 		private static string GetStageFileContentKey(string fileName)
 		{
-			string stageContentKey = null;
-			
-			Debug.Assert(stageContentKey != null, "wdir file content must be first set");
-			return stageContentKey;
+			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
+			return _entries[fileName].StageKey;
 		}
 		
 		/// <summary>
@@ -159,28 +173,30 @@ namespace GitSharp {
 		private static string GetRepoFileContentKey(string fileName)
 		{
 			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			return null;
+			return _entries[fileName].RepoKey;
 		}
 		
 		private static void SetStageFileContentKey(string fileName, string key)
 		{
 			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			
+			_entries[fileName].StageKey = key;
 		}
 		
 		private static void SetRepoFileContentKey(string fileName, string key)
 		{
 			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			
+			_entries[fileName].RepoKey = key;
 		}
 		
 		private static void SetWdirFileContentKey(string fileName, string key)
 		{
 			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			
+			_entries[fileName].WdirKey = key;
 		}
 
 		private class Entry {
+			public const string KeyNullValue = "0";
+			
 			public static Entry ParseFromLine(string line)
 			{
 				string[] lineItems = line.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
@@ -204,7 +220,7 @@ namespace GitSharp {
 				return lineBuilder.ToString();
 			}
 
-			public Entry(string fileName) : this(fileName, "0", "0", "0")
+			public Entry(string fileName) : this(fileName, KeyNullValue, KeyNullValue, KeyNullValue)
 			{
 			}
 
@@ -234,9 +250,7 @@ namespace GitSharp {
 				}
 				
 				using (StreamReader reader = new StreamReader(IndexPath)) {
-					string line = reader.ReadLine();
-					while (line != null) {
-						line = reader.ReadLine();
+					for (string line = reader.ReadLine(); line != null; line = reader.ReadLine()) {
 						Entry entry = Entry.ParseFromLine(line);
 						AddEntry(entry);
 					}

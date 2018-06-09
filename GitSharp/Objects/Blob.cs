@@ -1,11 +1,17 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using GitSharp.Hash;
 
 namespace GitSharp.Objects {
+	/// <summary>
+	/// Represents file blob object.
+	/// File blob object contains file header and file content.
+	/// Checksum method gives key which is used for storing and retrieving this blob
+	/// object from ObjectDatabase.
+	/// </summary>
 	internal class Blob : GitObject, IEquatable<Blob> {
 		private const string BlobFileType = "blob";
-		private string content;
 
 		public static Blob ParseFromString(string content)
 		{
@@ -15,42 +21,42 @@ namespace GitSharp.Objects {
 			}
 			return new Blob(reader.ReadToEnd());
 		}
-
-		public static string CreateBlobFileContent(Blob blob)
-		{
-			StringBuilder contentBuilder = new StringBuilder();
-			contentBuilder.AppendLine(BlobFileType);
-			contentBuilder.Append(blob.Content);
-			return contentBuilder.ToString();
-		}
 		
-		public Blob(string content)
+		public Blob(string fileName)
 		{
-			this.content = content;
+			FileName = fileName;
+			using (StreamReader reader = new StreamReader(fileName)) {
+				FileContent = reader.ReadToEnd();
+			}
+			BlobContent = CreateBlobFileContent();
+			Checksum = ContentHasher.HashContent(BlobContent);
 		}
 
-		public string Content {
-			get { return content; }
-		}
+		public string FileContent { get; }
+		
+		public string FileName { get; }
+		
+		/// <summary>
+		/// Returns a string representing text of blob file.
+		/// Contains filename alongside with filecontent
+		/// </summary>
+		public string BlobContent { get; }
+
+		public HashKey Checksum { get; }
 
 		public bool Equals(Blob other)
 		{
-			if (ReferenceEquals(null, other)) return false;
-			if (ReferenceEquals(this, other)) return true;
-			return string.Equals(content, other.content);
+			if (other == null) return false;
+			if (this == other) return true;
+			return string.Equals(FileContent, other.FileContent);
 		}
 
-		public override bool Equals(object obj)
+		private string CreateBlobFileContent()
 		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof(Blob)) return false;
-			return Equals((Blob) obj);
-		}
-
-		public override int GetHashCode()
-		{
-			return content.GetHashCode();
+			StringBuilder contentBuilder = new StringBuilder();
+			contentBuilder.AppendLine(BlobFileType + " " + FileName);
+			contentBuilder.Append(FileContent);
+			return contentBuilder.ToString();
 		}
 	}
 }

@@ -1,9 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using GitSharp.Hash;
+using GitSharp.Objects;
 
 namespace GitSharp.Commands {
 	internal class StatusCommand : Command {
+		public static File.StatusType ResolveFileStatus(string fileName)
+		{
+			if (!Index.ContainsFile(fileName)) {
+				return File.StatusType.Untracked;
+			}
+
+			Blob blob = new Blob(fileName);
+			HashKey newKey = blob.Checksum;
+			string oldKey = Index.GetFileBlobKey(fileName);
+
+			if (!newKey.Equals(oldKey)) {
+				Index.UpdateFileContentKey(fileName, newKey.ToString());
+			}
+			
+            if (Index.IsCommited(fileName)) {
+                return File.StatusType.Commited;
+            }
+            if (Index.IsStaged(fileName)) {
+                return File.StatusType.Staged;
+            }
+			if (Index.IsModified(fileName)) {
+				return File.StatusType.Modified;
+			}
+			
+			return File.StatusType.Ignored;
+		}
+		
 		public override void Process()
 		{
 			List<string> untrackedFiles = new List<string>();
@@ -73,32 +101,6 @@ namespace GitSharp.Commands {
 			foreach (string untrackedFile in untrackedFiles) {
 				Console.WriteLine($"    {untrackedFile}");
 			}
-		}
-
-		// TODO: may be specified as public static and moved somewhere else.
-		private File.StatusType ResolveFileStatus(string fileName)
-		{
-			if (!Index.ContainsFile(fileName)) {
-				return File.StatusType.Untracked;
-			}
-
-			HashKey newKey = ContentHasher.HashFileContent(fileName);
-			string oldKey = Index.GetFileContentKey(fileName);
-
-			if (newKey.Equals(oldKey)) {
-				if (Index.IsCommited(fileName)) {
-					return File.StatusType.Commited;
-				}
-				else if (Index.IsStaged(fileName)) {
-					return File.StatusType.Staged;
-				}
-			}
-			else {
-				Index.UpdateFileContentKey(fileName, newKey.ToString());
-				return File.StatusType.Modified;
-			}
-			
-			return File.StatusType.Ignored;
 		}
 	}
 }

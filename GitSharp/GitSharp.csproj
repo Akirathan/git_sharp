@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Author.cs" />
     <Compile Include="Cli.cs" />
+    <Compile Include="Commands\AddCommand.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\InitCommand.cs" />
     <Compile Include="Commands\StatusCommand.cs" />
