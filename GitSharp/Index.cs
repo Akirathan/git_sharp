@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using GitSharp.Commands;
+using GitSharp.Objects;
 
 namespace GitSharp {
 	/// <summary>
@@ -146,8 +147,20 @@ namespace GitSharp {
 		public static void Update()
 		{
 			Debug.Assert(Updated == false, "Update should be called just once.");
-			// ...
+			foreach (Entry entry in _entries.Values) {
+				UpdateEntryIfNecessary(entry);
+			}
 			Updated = true;
+		}
+		
+		private static void UpdateEntryIfNecessary(Entry entry)
+		{
+			Blob blob = new Blob(entry.FileName);
+			string oldKey = entry.WdirKey;
+			string newKey = blob.Checksum.ToString();
+			if (oldKey != newKey) {
+				entry.WdirKey = newKey;
+			}
 		}
 		
 		private static ICollection<Entry> GetEntries()
