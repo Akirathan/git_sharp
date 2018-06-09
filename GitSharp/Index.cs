@@ -55,6 +55,15 @@ namespace GitSharp {
 			return GetWdirFileContentKey(fileName);
 		}
 
+		/// <summary>
+		/// Returns all the files that are in the index ie. all tracked files.
+		/// </summary>
+		/// <returns></returns>
+		public static IEnumerable<string> GetAllTrackedFiles()
+		{
+			return _entries.Keys;
+		}
+		
 		public static IEnumerable<string> GetStagedFiles()
 		{
 			return null; // TODO:
