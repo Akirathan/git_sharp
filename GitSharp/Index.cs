@@ -92,7 +92,17 @@ namespace GitSharp {
 			       GetStageFileContentKey(fileName) != Entry.KeyNullValue &&
 			       GetRepoFileContentKey(fileName) != Entry.KeyNullValue;
 		}
+
+		private static bool IsDeletedInWdir(string fileName)
+		{
+			return _entries[fileName].WdirKey == RemovedFileKey;
+		}
 		
+		/// <summary>
+		/// Supposes that index is updated (at least for given file)
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <returns></returns>
 		public static File.StatusType ResolveFileStatus(string fileName)
 		{
 			if (!ContainsFile(fileName)) {
@@ -105,12 +115,11 @@ namespace GitSharp {
             if (IsStaged(fileName)) {
                 return File.StatusType.Staged;
             }
+			if (IsDeletedInWdir(fileName)) {
+				return File.StatusType.Deleted;
+			}
 			if (IsModified(fileName)) {
 				return File.StatusType.Modified;
-			}
-			
-			if (ContainsFile(fileName) && !System.IO.File.Exists(fileName)) {
-				return File.StatusType.Deleted;
 			}
 			
 			return File.StatusType.Ignored;
