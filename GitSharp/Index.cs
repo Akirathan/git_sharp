@@ -167,6 +167,7 @@ namespace GitSharp {
 		/// <param name="fileName"></param>
 		public static void UpdateFileInWdir(string fileName)
 		{
+			Debug.Assert(_entries.ContainsKey(fileName));
 			UpdateEntryIfNecessary(_entries[fileName]);
 		}
 		
