@@ -69,15 +69,14 @@ namespace GitSharp {
 		{
 			return null; // TODO:
 		}
-		
+
 		/// <summary>
-		/// Sets version of the content of given file.
+		/// Updates wdir content version of given file
 		/// </summary>
 		/// <param name="fileName"></param>
-		/// <param name="contentKey">pointer to content of the file</param>
-		public static void UpdateFileContentKey(string fileName, string contentKey)
+		public static void UpdateFileInWdir(string fileName)
 		{
-			SetWdirFileContentKey(fileName, contentKey);
+			UpdateEntryIfNecessary(_entries[fileName]);
 		}
 
 		public static bool IsModified(string fileName)
@@ -123,11 +122,6 @@ namespace GitSharp {
 			SetRepoFileContentKey(fileName, GetStageFileContentKey(fileName));
 		}
 
-		public static void FileRemovedFromWdir(string fileName)
-		{
-			SetWdirFileContentKey(fileName, RemovedFileKey);
-		}
-
 		/// <summary>
 		/// Adds given file into the Index ie. starts tracking this file.
 		/// </summary>
@@ -155,6 +149,11 @@ namespace GitSharp {
 		
 		private static void UpdateEntryIfNecessary(Entry entry)
 		{
+			if (!System.IO.File.Exists(entry.FileName)) {
+				entry.WdirKey = RemovedFileKey;
+				return;
+			}
+			
 			Blob blob = new Blob(entry.FileName);
 			string oldKey = entry.WdirKey;
 			string newKey = blob.Checksum.ToString();
