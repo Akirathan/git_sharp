@@ -59,6 +59,7 @@
     <Compile Include="Objects\Commit.cs" />
     <Compile Include="Objects\GitObject.cs" />
     <Compile Include="Objects\Tree.cs" />
+    <Compile Include="Objects\TreeBuilder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reference\ReferenceTracker.cs" />
