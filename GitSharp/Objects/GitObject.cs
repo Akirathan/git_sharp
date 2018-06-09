@@ -1,5 +1,5 @@
 ﻿namespace GitSharp.Objects {
-	public class GitObject {
-		
+	internal abstract class GitObject {
+		public abstract string GetGitObjectFileContent();
 	}
 }

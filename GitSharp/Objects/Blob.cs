@@ -12,6 +12,7 @@ namespace GitSharp.Objects {
 	/// </summary>
 	internal class Blob : GitObject, IEquatable<Blob> {
 		private const string BlobFileType = "blob";
+		private string _blobContent;
 
 		public static Blob ParseFromString(string content)
 		{
@@ -28,22 +29,21 @@ namespace GitSharp.Objects {
 			using (StreamReader reader = new StreamReader(fileName)) {
 				FileContent = reader.ReadToEnd();
 			}
-			BlobContent = CreateBlobFileContent();
-			Checksum = ContentHasher.HashContent(BlobContent);
+			_blobContent = CreateBlobFileContent();
+			Checksum = ContentHasher.HashContent(_blobContent);
 		}
 
 		public string FileContent { get; }
 		
 		public string FileName { get; }
-		
-		/// <summary>
-		/// Returns a string representing text of blob file.
-		/// Contains filename alongside with filecontent
-		/// </summary>
-		public string BlobContent { get; }
 
 		public HashKey Checksum { get; }
 
+		public override string GetGitObjectFileContent()
+		{
+			return _blobContent;
+		}
+		
 		public bool Equals(Blob other)
 		{
 			if (other == null) return false;
