@@ -46,7 +46,8 @@ namespace GitSharp.Reference {
 		}
 
 		/// <summary>
-		/// Returns current head branch
+		/// Returns current head branch.
+		/// If repository was recently initialized, there is just implicit master branch.
 		/// </summary>
 		/// <returns></returns>
 		public static Branch GetHead()
@@ -68,9 +69,13 @@ namespace GitSharp.Reference {
 
 		public static Branch GetBranch(string branchName)
 		{
-			
+			if (!_trackedBranches.ContainsKey(branchName)) {
+				Branch branch = ReadBranchFromFile(branchName);
+				_trackedBranches.Add(branchName, branch);
+			}
+			return _trackedBranches[branchName];
 		}
-		
+
 		public static IEnumerable<Branch> GetAllBranches()
 		{
 			
@@ -91,6 +96,12 @@ namespace GitSharp.Reference {
 			}
 		}
 		
+		private static Branch ReadBranchFromFile(string branchName)
+		{
+            string branchFileContent = ReadFile(BranchDirPath + Path.DirectorySeparatorChar + branchName);
+			return Branch.ParseFromString(branchFileContent);
+		}
+		
 		private static void SaveBranch(Branch branch)
 		{
 			using (StreamWriter writer =
@@ -108,6 +119,5 @@ namespace GitSharp.Reference {
 			}
 			return content;
 		}
-
 	}
 }
