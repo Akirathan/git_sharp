@@ -13,6 +13,11 @@ namespace GitSharp.Reference {
 		private HashKey _commitKey;
 		private Commit _commit;
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="commitKey">may be null</param>
 		public Branch(string name, HashKey commitKey)
 		{
 			IsModified = false;
