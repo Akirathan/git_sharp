@@ -15,6 +15,16 @@ namespace GitSharp.Objects {
 		private string _blobContent;
 		private HashKey _checksum;
 
+		public static Blob ParseFromString(string content)
+		{
+			StringReader reader = new StringReader(content);
+			string fileName = ParseFirstLine(reader.ReadLine());
+			if (fileName == null) {
+				return null;
+			}
+			return new Blob(fileName);
+		}
+		
 		private static string ParseFirstLine(string firstLine)
 		{
 			if (firstLine == null) {
@@ -25,16 +35,6 @@ namespace GitSharp.Objects {
 				return null;
 			}
 			return lineItems[1];
-		}
-		
-		public static Blob ParseFromString(string content)
-		{
-			StringReader reader = new StringReader(content);
-			string fileName = ParseFirstLine(reader.ReadLine());
-			if (fileName == null) {
-				return null;
-			}
-			return new Blob(fileName);
 		}
 		
 		public Blob(string fileName)
