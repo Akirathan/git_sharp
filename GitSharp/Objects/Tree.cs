@@ -196,17 +196,23 @@ namespace GitSharp.Objects {
 		
 		private string CreateTreeFileContent()
 		{
-			StringBuilder contentBuilder = new StringBuilder();
+			// Convert subtree dictionary
+			IDictionary<string, HashKey> subTrees = new Dictionary<string, HashKey>();
+			foreach (KeyValuePair<string, TreeEntry> pair in _subTrees) {
+				string dirName = pair.Key;
+				HashKey key = pair.Value.Key;
+				subTrees.Add(dirName, key);
+			}
 			
-			contentBuilder.AppendLine(TreeFileType + " " + DirName);
-            foreach (BlobEntry blobEntry in _blobs.Values) {
-                contentBuilder.AppendLine(blobEntry.Key.ToString());
-            }
-            foreach (TreeEntry treeEntry in _subTrees.Values) {
-                contentBuilder.AppendLine(treeEntry.Key.ToString());
-            }
+			// Convert blobs dictionary
+			IDictionary<string, HashKey> blobs = new Dictionary<string, HashKey>();
+			foreach (KeyValuePair<string, BlobEntry> pair in _blobs) {
+				string fileName = pair.Key;
+				HashKey key = pair.Value.Key;
+				blobs.Add(fileName, key);
+			}
 
-			return contentBuilder.ToString();
+			return TreePrinter.PrintToString(DirName, blobs, subTrees);
 		}
 
 		private class TreeEntry {
