@@ -44,7 +44,9 @@ namespace GitSharp.Reference {
 
 		public static Branch CreateBranch(string name, HashKey commitKey)
 		{
-			
+			Branch branch = new Branch(name, commitKey);
+			_branches.Add(name, branch);
+			return branch;
 		}
 	}
 }
