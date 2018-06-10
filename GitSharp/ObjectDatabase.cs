@@ -10,18 +10,11 @@ namespace GitSharp {
 		public static readonly string DefaultPath =
 			Traverser.GitRootDirName + Path.DirectorySeparatorChar + "objects";
 
-		public static HashKey Store(Blob blob)
+		public static HashKey Store(GitObject gitObject)
 		{
-			HashKey key = blob.GetChecksum();
-			WriteObjectContentToFile(blob.GetGitObjectFileContent(), key.ToString());
-			return key;
-		}
-
-		public static HashKey Store(Tree tree)
-		{
-			string treeFileContent = tree.GetGitObjectFileContent();
-			HashKey key = tree.GetChecksum();
-			WriteObjectContentToFile(treeFileContent, key.ToString());
+			string fileContent = gitObject.GetGitObjectFileContent();
+			HashKey key = gitObject.GetChecksum();
+			WriteObjectContentToFile(fileContent, key.ToString());
 			return key;
 		}
 
