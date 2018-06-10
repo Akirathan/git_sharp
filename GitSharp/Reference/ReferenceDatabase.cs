@@ -3,16 +3,23 @@ using GitSharp.Hash;
 
 namespace GitSharp.Reference {
 	internal static class ReferenceDatabase {
-		private static IDictionary<string, Branch> _branches;
+		private static readonly IDictionary<string, Branch> _branches = new Dictionary<string, Branch>();
 		
 		static ReferenceDatabase()
 		{
 			
 		}
 
+		/// <summary>
+		/// Saves all modified (or created) branches.
+		/// </summary>
 		public static void Dispose()
 		{
-			
+			foreach (Branch branch in _branches.Values) {
+				if (branch.IsModified) {
+					// TODO: save branch.
+				}
+			}
 		}
 
 		public static Branch GetHead()
