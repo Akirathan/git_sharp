@@ -19,6 +19,18 @@ namespace GitSharp {
 		}
 
 		/// <summary>
+		/// Stores given commit, its root tree and all the subtrees of the root tree
+		/// in the ObjectDatabase.
+		/// This is useful for creating commit objects.
+		/// </summary>
+		/// <param name="commit"></param>
+		/// <returns></returns>
+		public static HashKey StoreCommitWithTreeHierarchy(Commit commit)
+		{
+			
+		}
+
+		/// <summary>
 		/// Retrieves blob object from database.
 		/// </summary>
 		/// <param name="key"></param>
