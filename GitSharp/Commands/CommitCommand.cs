@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GitSharp.Hash;
 using GitSharp.Objects;
+using GitSharp.Reference;
 
 namespace GitSharp.Commands {
 	internal class CommitCommand : Command {
@@ -29,9 +30,25 @@ namespace GitSharp.Commands {
 			}
 
 			Tree tree = treeBuilder.CreateImmutableTree();
-			ObjectDatabase.Store(tree);
-			
-			// TODO: create and save commit object
+			Commit commit = CreateCommit(tree);
+			StoreCommitAndAdvanceHeadBranch(commit);
+		}
+
+		private Commit CreateCommit(Tree tree)
+		{
+			Commit commit = new Commit(
+				parentKey: ReferenceDatabase.GetHead().GetCommitKey(),
+				treeKey: tree.GetChecksum(),
+				message: _message
+			);
+			return commit;
+		}
+
+		private void StoreCommitAndAdvanceHeadBranch(Commit commit)
+		{
+			Branch currentBranch = ReferenceDatabase.GetHead();
+			HashKey newCommitKey = ObjectDatabase.StoreCommitWithTreeHierarchy(commit);
+			currentBranch.SetCommitKey(newCommitKey);
 		}
 
 		private Blob GetStagedFileBlob(string stagedFileName)
