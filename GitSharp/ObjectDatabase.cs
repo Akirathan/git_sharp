@@ -59,6 +59,17 @@ namespace GitSharp {
 
 			return Tree.ParseFromString(fileContent);
 		}
+
+		public static Commit RetrieveCommit(HashKey key)
+		{
+			string fileName = key.ToString();
+			string fileContent = ReadFileContent(fileName);
+			if (fileContent == null) {
+				return null;
+			}
+
+			return Commit.ParseFromString(fileContent);
+		}
 		
 		private static void WriteObjectContentToFile(string content, string fileName)
 		{
