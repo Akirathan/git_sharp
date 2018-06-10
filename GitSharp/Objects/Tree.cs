@@ -12,19 +12,6 @@ namespace GitSharp.Objects {
 		private readonly string _treeObjectFileContent;
 		private readonly HashKey _checksum;
 
-		/// May return null
-		private static string ParseFirstLine(string firstLine)
-		{
-			if (firstLine == null) {
-				return null;
-			}
-
-			if (firstLine.Split(new char[] {' '})[0] != TreeFileType) {
-				return null;
-			}
-			return firstLine.Split(new char[] {' '})[1];
-		}
-		
 		/// <summary>
 		/// Parses tree from given string. Suppose that string represents content
 		/// of a file.
@@ -60,6 +47,19 @@ namespace GitSharp.Objects {
 			}
 			
 			return new Tree(dirName, blobs, subTrees);
+		}
+		
+		/// May return null
+		private static string ParseFirstLine(string firstLine)
+		{
+			if (firstLine == null) {
+				return null;
+			}
+
+			if (firstLine.Split(new char[] {' '})[0] != TreeFileType) {
+				return null;
+			}
+			return firstLine.Split(new char[] {' '})[1];
 		}
 
 		private static bool IsTreeEntry(string[] lineItems)
