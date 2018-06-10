@@ -1,18 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using GitSharp.Hash;
 
 namespace GitSharp.Objects {
 	/// <summary>
 	/// Is not immutable like Tree.
 	/// Particular useful for creating tree objects
+	/// TODO: add dirName
 	/// </summary>
-	internal class TreeBuilder {
+	internal class TreeBuilder : GitObject {
 		private IDictionary<string, Blob> _blobs = new Dictionary<string, Blob>();
 		private IDictionary<string, TreeBuilder> _subTrees = new Dictionary<string, TreeBuilder>();
 		
 		public Tree CreateImmutableTree()
 		{
 			return null;
+		}
+		
+		public override string GetGitObjectFileContent()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public override HashKey GetChecksum()
+		{
+			throw new System.NotImplementedException();
 		}
 
 		/// <summary>
@@ -50,5 +62,4 @@ namespace GitSharp.Objects {
 			return _subTrees[dirNames[i]].FindOrCreateSubTree(dirNames, i + 1);
 		}
 	}
-
 }
