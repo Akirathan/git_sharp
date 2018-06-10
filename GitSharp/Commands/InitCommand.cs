@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using GitSharp.Reference;
 
 namespace GitSharp.Commands {
 	internal class InitCommand : Command {
@@ -41,6 +42,7 @@ namespace GitSharp.Commands {
 		{
 			CreateDirectory(ObjectDatabase.DefaultPath);
 			CreateFile(Index.IndexPath);
+			ReferenceDatabase.Init();
 		}
 
 		private void CreateDirectory(string dirName)
