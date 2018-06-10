@@ -15,13 +15,26 @@ namespace GitSharp.Objects {
 		private string _blobContent;
 		private HashKey _checksum;
 
+		private static string ParseFirstLine(string firstLine)
+		{
+			if (firstLine == null) {
+				return null;
+			}
+			string[] lineItems = firstLine.Split(new char[] {' '});
+			if (lineItems[0] != BlobFileType || lineItems.Length != 2) {
+				return null;
+			}
+			return lineItems[1];
+		}
+		
 		public static Blob ParseFromString(string content)
 		{
 			StringReader reader = new StringReader(content);
-			if (reader.ReadLine() != BlobFileType) {
+			string fileName = ParseFirstLine(reader.ReadLine());
+			if (fileName == null) {
 				return null;
 			}
-			return new Blob(reader.ReadToEnd());
+			return new Blob(fileName);
 		}
 		
 		public Blob(string fileName)
