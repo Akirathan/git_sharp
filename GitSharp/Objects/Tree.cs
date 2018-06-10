@@ -7,11 +7,24 @@ using GitSharp.Hash;
 namespace GitSharp.Objects {
 	internal class Tree : GitObject {
 		private const string TreeFileType = "tree";
-		private readonly List<TreeEntry> _treeEntries;
-		private readonly List<BlobEntry> _blobEntries;
+		private readonly IDictionary<string, Tree> _subTrees;
+		private readonly IDictionary<string, Blob> _blobs;
 		private readonly string _treeObjectFileContent;
 		private readonly HashKey _checksum;
 
+		/// May return null
+		private static string ParseFirstLine(string firstLine)
+		{
+			if (firstLine == null) {
+				return null;
+			}
+
+			if (firstLine.Split(new char[] {' '})[0] != TreeFileType) {
+				return null;
+			}
+			return firstLine.Split(new char[] {' '})[1];
+		}
+		
 		/// <summary>
 		/// Parses tree from given string. Suppose that string represents content
 		/// of a file.
@@ -22,67 +35,87 @@ namespace GitSharp.Objects {
 		{
 			StringReader reader = new StringReader(content);
 
-			if (reader.ReadLine() != TreeFileType) {
+			string dirName = ParseFirstLine(reader.ReadLine());
+			if (dirName == null) {
 				return null;
 			}
 
-			List<BlobEntry> blobEntries = new List<BlobEntry>();
-			List<TreeEntry> treeEntries = new List<TreeEntry>();
+			Dictionary<string, Blob> blobs = new Dictionary<string, Blob>();
+			Dictionary<string, Tree> subTrees = new Dictionary<string, Tree>();
 			string line = reader.ReadLine();
 			
 			while (line != null) {
                 string[] lineItems = line.Split(new char[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 				
-                if (TreeEntry.IsTreeEntry(lineItems)) {
-                    TreeEntry treeEntry;
-                    if (!TreeEntry.ParseFromStringLineItems(lineItems, out treeEntry)) {
-                        return null;
-                    }
-                    treeEntries.Add(treeEntry);
+                if (IsTreeEntry(lineItems)) {
+	                Tree tree = ParseTreeEntry(lineItems);
+                    subTrees.Add(tree.DirName, tree);
                 }
-                else if (BlobEntry.IsBlobEntry(lineItems)) {
-	                BlobEntry blobEntry;
-	                if (!BlobEntry.ParseFromStringLineItems(lineItems, out blobEntry)) {
-		                return null;
-	                }
-	                blobEntries.Add(blobEntry);
+                else if (IsBlobEntry(lineItems)) {
+	                Blob blob = ParseBlobEntry(lineItems);
+	                blobs.Add(blob.FileName, blob);
                 }
 
 				line = reader.ReadLine();
 			}
 			
-			return new Tree(blobEntries, treeEntries);
+			return new Tree(dirName, blobs, subTrees);
+		}
+
+		private static bool IsTreeEntry(string[] lineItems)
+		{
+			return lineItems[0] == "tree";
 		}
 		
-		public Tree(List<BlobEntry> blobEntries, List<TreeEntry> treeEntries)
+		private static bool IsBlobEntry(string[] lineItems)
 		{
-			if (blobEntries == null) {
-				_blobEntries = new List<BlobEntry>();
+			return lineItems[0] == "blob";
+		}
+
+		/// May return null
+		private static Tree ParseTreeEntry(string[] lineItems)
+		{
+            if (lineItems.Length != 3) {
+	            return null;
+            }
+
+			string key = lineItems[1];
+			return ObjectDatabase.RetrieveTree(HashKey.ParseFromString(key));
+		}
+
+		/// May return null
+		private static Blob ParseBlobEntry(string[] lineItems)
+		{
+            if (lineItems.Length != 3) {
+	            return null;
+            }
+			string key = lineItems[1];
+			return ObjectDatabase.RetrieveBlob(HashKey.ParseFromString(key));
+		}
+		
+		public Tree(string dirName, IDictionary<string, Blob> blobs, IDictionary<string, Tree> subTrees)
+		{
+			DirName = dirName;
+			
+			if (blobs == null) {
+				_blobs = new Dictionary<string, Blob>();
 			}
 			else {
-                _blobEntries = blobEntries;
+                _blobs = blobs;
 			}
 
-			if (treeEntries == null) {
-				_treeEntries = new List<TreeEntry>();
+			if (subTrees == null) {
+				_subTrees = new Dictionary<string, Tree>();
 			}
 			else {
-                _treeEntries = treeEntries;
+                _subTrees = subTrees;
 			}
 
 			_treeObjectFileContent = CreateTreeFileContent();
 			_checksum = ContentHasher.HashContent(_treeObjectFileContent);
 		}
-
-		public List<BlobEntry> GetBlobEntries()
-		{
-			return _blobEntries;
-		}
-
-		public List<TreeEntry> GetTreeEntries()
-		{
-			return _treeEntries;
-		}
+		
+		public string DirName { get; }
 		
 		public override string GetGitObjectFileContent()
 		{
@@ -103,130 +136,15 @@ namespace GitSharp.Objects {
 		{
 			StringBuilder contentBuilder = new StringBuilder();
 			
-			contentBuilder.AppendLine(TreeFileType);
-            foreach (BlobEntry blobEntry in _blobEntries) {
+			contentBuilder.AppendLine(TreeFileType + " " + DirName);
+            foreach (Blob blobEntry in _blobs.Values) {
                 contentBuilder.AppendLine(blobEntry.ToString());
             }
-            foreach (TreeEntry treeEntry in _treeEntries) {
+            foreach (Tree treeEntry in _subTrees.Values) {
                 contentBuilder.AppendLine(treeEntry.ToString());
             }
 
 			return contentBuilder.ToString();
-		}
-
-		public struct BlobEntry {
-			// TODO: FileMode
-
-			private Blob _blob;
-			private HashKey _key;
-			private string _fileName;
-
-			public static bool IsBlobEntry(string[] lineItems)
-			{
-				return lineItems[0] == "blob";
-			}
-
-			public static bool ParseFromStringLineItems(string[] lineItems, out BlobEntry blobEntry)
-			{
-				blobEntry = new BlobEntry();
-				if (lineItems.Length != 3) {
-					return false;
-				}
-				blobEntry._key= HashKey.ParseFromString(lineItems[1]);
-				blobEntry._fileName= lineItems[2];
-				return true;
-			}
-
-			public BlobEntry(HashKey key, string fileName)
-			{
-				_key = key;
-				_fileName = fileName;
-				_blob = null;
-			}
-
-			public HashKey Key {
-				get { return _key; }
-			}
-			
-			public string FileName {
-				get { return _fileName; }
-			}
-			
-			/// <summary>
-			/// Retrieves blob object on demand.
-			/// </summary>
-			/// <returns></returns>
-			public Blob GetBlob()
-			{
-				if (_blob == null) {
-                    _blob = ObjectDatabase.RetrieveBlob(_key);
-				}
-				return _blob;
-			}
-			
-			public override string ToString()
-			{
-				return "blob " + Key.ToString() + " " + FileName;
-			}
-
-		}
-
-		public struct TreeEntry {
-			// TODO: FileMode
-
-			private HashKey _key;
-			private string _directoryName;
-			private Tree _tree;
-
-			public static bool IsTreeEntry(string[] lineItems)
-			{
-				return lineItems[0] == "tree";
-			}
-			
-			/// <summary>
-			/// 
-			/// </summary>
-			/// <param name="lineItems"></param>
-			/// <param name="treeEntry"></param>
-			/// <returns>
-			/// false if parsing fails.
-			/// </returns>
-			public static bool ParseFromStringLineItems(string[] lineItems, out TreeEntry treeEntry)
-			{
-				treeEntry = new TreeEntry();
-				if (lineItems.Length != 3) {
-					return false;
-				}
-				treeEntry._key= HashKey.ParseFromString(lineItems[1]);
-				treeEntry._directoryName= lineItems[2];
-				return true;
-			}
-
-			public TreeEntry(HashKey key, string directoryName)
-			{
-				_key = key;
-				_directoryName = directoryName;
-				_tree = null;
-			}
-
-			public HashKey Key {
-				get { return _key; }
-			}
-
-			public string DirectoryName {
-				get { return _directoryName; }
-			}
-
-			public Tree GetTree()
-			{
-				// _tree = ...
-				return null;
-			}
-			
-			public override string ToString()
-			{
-				return "tree " + Key.ToString() + " " + DirectoryName;
-			}
 		}
 	}
 }
