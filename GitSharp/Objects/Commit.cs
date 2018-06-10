@@ -30,7 +30,7 @@ namespace GitSharp.Objects {
 			reader.ReadLine();
 			string message = reader.ReadToEnd();
 			
-			if (parentKey == null || treeKey == null || message == null) {
+			if (parentKey == null || treeKey == null) {
 				return null;
 			}
 			
@@ -39,6 +39,7 @@ namespace GitSharp.Objects {
 
 		public Commit(HashKey parentKey, HashKey treeKey, string message)
 		{
+			ParentKey = parentKey;
 			TreeKey = treeKey;
 			Message = message;
 			_commitFileContent = CreateCommitFileContent();

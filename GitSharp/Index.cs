@@ -195,7 +195,7 @@ namespace GitSharp {
 			
 			Blob blob = new Blob(entry.FileName);
 			string oldKey = entry.WdirKey;
-			string newKey = blob.Checksum.ToString();
+			string newKey = blob.GetChecksum().ToString();
 			if (oldKey != newKey) {
 				entry.WdirKey = newKey;
 			}
