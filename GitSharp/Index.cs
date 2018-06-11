@@ -78,7 +78,13 @@ namespace GitSharp {
 		
 		public static List<string> GetStagedFiles()
 		{
-			return null; // TODO:
+			List<string> stagedFileNames = new List<string>();
+			foreach (Entry entry in _entries.Values) {
+				if (IsEntryStaged(entry)) {
+					stagedFileNames.Add(entry.FilePath.GetRelativeToGitRoot());
+				}
+			}
+			return stagedFileNames;
 		}
 
 		public static bool IsModified(RelativePath filePath)
@@ -201,6 +207,14 @@ namespace GitSharp {
 			}
 		}
 		
+		private static bool IsEntryStaged(Entry entry)
+		{
+			return entry.WdirKey == entry.StageKey &&
+			       entry.StageKey != entry.RepoKey &&
+			       entry.WdirKey != Entry.KeyNullValue &&
+			       entry.StageKey != Entry.KeyNullValue;
+		}
+
 		private static bool IsDeletedInWdir(RelativePath filePath)
 		{
 			return _entries[filePath].WdirKey == RemovedFileKey;
