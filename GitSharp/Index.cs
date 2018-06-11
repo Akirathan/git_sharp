@@ -71,7 +71,7 @@ namespace GitSharp {
 			return _entries.Keys;
 		}
 		
-		public static IEnumerable<string> GetStagedFiles()
+		public static List<string> GetStagedFiles()
 		{
 			return null; // TODO:
 		}

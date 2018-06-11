@@ -20,10 +20,15 @@ namespace GitSharp.Commands {
 				PrintHelp();
 				return;
 			}
+			
+			List<string> stagedFiles = Index.GetStagedFiles();
+			if (stagedFiles.Count == 0) {
+				PrintNoStagedFilesError();
+				return;
+			}
 
 			TreeBuilder treeBuilder = TreeBuilder.CreateRootTreeBuilder();
 			
-			IEnumerable<string> stagedFiles = Index.GetStagedFiles();
 			foreach (string stagedFile in stagedFiles) {
 				Blob blob = GetStagedFileBlob(stagedFile);
 				treeBuilder.AddBlobToTreeHierarchy(blob);
@@ -61,6 +66,11 @@ namespace GitSharp.Commands {
 			Console.WriteLine("usage: \"git commit <message>\"");
 		}
 		
+		private void PrintNoStagedFilesError()
+		{
+			Console.WriteLine("No staged files for commit");
+		}
+
 		private bool ProcessOptions(string[] args)
 		{
 			if (args.Length != 1) {
