@@ -56,7 +56,8 @@
     <Compile Include="ObjectDatabase.cs" />
     <Compile Include="Objects\Blob.cs" />
     <Compile Include="Objects\Commit.cs" />
-    <Compile Include="Objects\GitObject.cs" />
+    <Compile Include="Objects\IGitObject.cs" />
+    <Compile Include="Objects\IStorableGitObject.cs" />
     <Compile Include="Objects\Tree.cs" />
     <Compile Include="Objects\TreeBuilder.cs" />
     <Compile Include="Objects\TreePrinter.cs" />

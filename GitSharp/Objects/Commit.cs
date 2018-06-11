@@ -7,7 +7,7 @@ namespace GitSharp.Objects {
 	/// <summary>
 	/// root tree and parent commits are retrieved on demand.
 	/// </summary>
-	internal class Commit : GitObject {
+	internal class Commit : IStorableGitObject {
 		private const string CommitFileType = "commit";
 
 		private const string NullParentKey = "0";
@@ -55,12 +55,12 @@ namespace GitSharp.Objects {
 		
 		public string Message { get; }
 
-		public override string GetGitObjectFileContent()
+		public string GetGitObjectFileContent()
 		{
 			return _commitFileContent;
 		}
 
-		public override HashKey GetChecksum()
+		public HashKey GetChecksum()
 		{
 			return _checksum;
 		}

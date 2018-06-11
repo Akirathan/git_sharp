@@ -6,7 +6,7 @@ using System.Text;
 using GitSharp.Hash;
 
 namespace GitSharp.Objects {
-	internal class Tree : GitObject {
+	internal class Tree : IGitObject {
 		private const string TreeFileType = "tree";
 		private readonly IDictionary<string, TreeEntry> _subTrees = new Dictionary<string, TreeEntry>();
 		private readonly IDictionary<string, BlobEntry> _blobs = new Dictionary<string, BlobEntry>();
@@ -78,24 +78,19 @@ namespace GitSharp.Objects {
 			return lineItems[0] == "blob";
 		}
 
-		private Tree(string dirName, IDictionary<string, HashKey> blobs, IDictionary<string, HashKey> subTrees)
+		private Tree(HashKey checksum, string dirName, IDictionary<string, HashKey> blobs,
+			IDictionary<string, HashKey> subTrees)
 		{
 			InitBlobs(blobs);
 			InitSubTrees(subTrees);
 			
 			DirName = dirName;
-			_treeObjectFileContent = CreateTreeFileContent();
-			_checksum = ContentHasher.HashContent(_treeObjectFileContent);
+			_checksum = checksum;
 		}
 		
 		public string DirName { get; }
-		
-		public override string GetGitObjectFileContent()
-		{
-			return _treeObjectFileContent;
-		}
 
-		public override HashKey GetChecksum()
+		public HashKey GetChecksum()
 		{
 			return _checksum;
 		}
@@ -192,27 +187,6 @@ namespace GitSharp.Objects {
 
 			TreeEntry subTreeEntry = _subTrees[dirHierarchy[i + 1]];
 			return subTreeEntry.LoadTree().FindAndLoadBlob(dirHierarchy, i + 1);
-		}
-		
-		private string CreateTreeFileContent()
-		{
-			// Convert subtree dictionary
-			IDictionary<string, HashKey> subTrees = new Dictionary<string, HashKey>();
-			foreach (KeyValuePair<string, TreeEntry> pair in _subTrees) {
-				string dirName = pair.Key;
-				HashKey key = pair.Value.Key;
-				subTrees.Add(dirName, key);
-			}
-			
-			// Convert blobs dictionary
-			IDictionary<string, HashKey> blobs = new Dictionary<string, HashKey>();
-			foreach (KeyValuePair<string, BlobEntry> pair in _blobs) {
-				string fileName = pair.Key;
-				HashKey key = pair.Value.Key;
-				blobs.Add(fileName, key);
-			}
-
-			return TreePrinter.PrintToString(DirName, blobs, subTrees);
 		}
 
 		private class TreeEntry {

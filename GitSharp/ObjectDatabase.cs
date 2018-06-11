@@ -10,7 +10,7 @@ namespace GitSharp {
 		public static readonly string DefaultPath =
 			Traverser.GitRootDirName + Path.DirectorySeparatorChar + "objects";
 
-		public static HashKey Store(GitObject gitObject)
+		public static HashKey Store(IStorableGitObject gitObject)
 		{
 			string fileContent = gitObject.GetGitObjectFileContent();
 			HashKey key = gitObject.GetChecksum();

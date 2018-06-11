@@ -8,7 +8,7 @@ namespace GitSharp.Objects {
 	/// Particular useful for creating tree objects
 	/// TODO: add dirName
 	/// </summary>
-	internal class TreeBuilder : GitObject {
+	internal class TreeBuilder : IStorableGitObject {
 		private IDictionary<string, Blob> _blobs = new Dictionary<string, Blob>();
 		private IDictionary<string, TreeBuilder> _subTrees = new Dictionary<string, TreeBuilder>();
 		
@@ -17,12 +17,12 @@ namespace GitSharp.Objects {
 			return null;
 		}
 		
-		public override string GetGitObjectFileContent()
+		public string GetGitObjectFileContent()
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public override HashKey GetChecksum()
+		public HashKey GetChecksum()
 		{
 			throw new System.NotImplementedException();
 		}

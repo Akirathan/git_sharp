@@ -10,7 +10,7 @@ namespace GitSharp.Objects {
 	/// Checksum method gives key which is used for storing and retrieving this blob
 	/// object from ObjectDatabase.
 	/// </summary>
-	internal class Blob : GitObject, IEquatable<Blob> {
+	internal class Blob : IStorableGitObject, IEquatable<Blob> {
 		private const string BlobFileType = "blob";
 		private string _blobContent;
 		private HashKey _checksum;
@@ -51,12 +51,12 @@ namespace GitSharp.Objects {
 		
 		public string FileName { get; }
 
-		public override string GetGitObjectFileContent()
+		public string GetGitObjectFileContent()
 		{
 			return _blobContent;
 		}
 
-		public override HashKey GetChecksum()
+		public HashKey GetChecksum()
 		{
 			return _checksum;
 		}
