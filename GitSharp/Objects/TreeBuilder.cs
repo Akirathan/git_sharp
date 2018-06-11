@@ -12,11 +12,6 @@ namespace GitSharp.Objects {
 		private IDictionary<string, Blob> _blobs = new Dictionary<string, Blob>();
 		private IDictionary<string, TreeBuilder> _subTrees = new Dictionary<string, TreeBuilder>();
 		
-		public Tree CreateImmutableTree()
-		{
-			return null;
-		}
-		
 		public string GetGitObjectFileContent()
 		{
 			throw new System.NotImplementedException();

@@ -29,16 +29,15 @@ namespace GitSharp.Commands {
 				treeBuilder.AddBlobToTreeHierarchy(blob);
 			}
 
-			Tree tree = treeBuilder.CreateImmutableTree();
-			Commit commit = CreateCommit(tree);
+			Commit commit = CreateCommit(treeBuilder);
 			StoreCommitAndAdvanceHeadBranch(commit);
 		}
 
-		private Commit CreateCommit(Tree tree)
+		private Commit CreateCommit(TreeBuilder treeBuilder)
 		{
 			Commit commit = new Commit(
 				parentKey: ReferenceDatabase.GetHead().GetCommitKey(),
-				treeKey: tree.GetChecksum(),
+				treeKey: treeBuilder.GetChecksum(),
 				message: _message
 			);
 			return commit;
