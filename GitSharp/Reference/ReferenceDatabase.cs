@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using GitSharp.Hash;
 
@@ -78,7 +79,7 @@ namespace GitSharp.Reference {
 
 		public static IEnumerable<Branch> GetAllBranches()
 		{
-			
+			throw new NotImplementedException();
 		}
 
 		public static Branch CreateBranch(string name, HashKey commitKey)
