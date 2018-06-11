@@ -45,6 +45,11 @@ namespace GitSharp.Objects {
 			TreeBuilder subTreeBuilder = FindOrCreateSubTree(GetAllDirParents(blob.FileName), 0);
 			subTreeBuilder.AddBlob(blob);
 		}
+		
+		public void GetAllBlobsAndSubTrees(List<Blob> allBlobs, List<TreeBuilder> allTrees)
+		{
+			GetAllSubElements(allBlobs, allTrees);
+		}
 
 		private void AddBlob(Blob blob)
 		{
@@ -68,6 +73,15 @@ namespace GitSharp.Objects {
 			}
 
 			return _subTrees[dirNames[i]].FindOrCreateSubTree(dirNames, i + 1);
+		}
+
+		private void GetAllSubElements(List<Blob> allBlobs, List<TreeBuilder> allTrees)
+		{
+			allBlobs.AddRange(_blobs.Values);
+			allTrees.Add(this);
+			foreach (TreeBuilder subTree in _subTrees.Values) {
+				subTree.GetAllSubElements(allBlobs, allTrees);
+			}
 		}
 
 		private string CreateTreeBuilderFileContent()
