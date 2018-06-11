@@ -21,7 +21,8 @@ namespace GitSharp {
 	/// </summary>
 	internal static class Index {
         public static readonly string IndexPath
-	        = Traverser.GetRootDirPath() + Path.DirectorySeparatorChar + "index";
+	        = Traverser.GetRootDirPath() + Path.DirectorySeparatorChar + Traverser.GitRootDirName
+	          + Path.DirectorySeparatorChar + "index";
 
 		private const string RemovedFileKey = "-";
 		private static Dictionary<RelativePath, Entry> _entries = new Dictionary<RelativePath, Entry>();
