@@ -90,14 +90,14 @@ namespace GitSharp.Objects {
 			
 			contentBuilder.AppendLine(Tree.TreeFileType + " " + _dirName);
 			
-            foreach (KeyValuePair<string, HashKey> pair in blobs) {
-	            HashKey key = pair.Value;
+            foreach (KeyValuePair<string, Blob> pair in _blobs) {
+	            HashKey key = pair.Value.GetChecksum();
 	            string fileName = pair.Key;
                 contentBuilder.AppendLine("blob " + key.ToString() + " " + fileName);
             }
 			
-            foreach (KeyValuePair<string, HashKey> pair in subTrees) {
-	            HashKey key = pair.Value;
+            foreach (KeyValuePair<string, TreeBuilder> pair in _subTrees) {
+	            HashKey key = pair.Value.GetChecksum();
 	            string subTreeDirName = pair.Key;
                 contentBuilder.AppendLine("tree " + key.ToString() + " " + subTreeDirName);
             }
