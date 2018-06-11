@@ -28,7 +28,7 @@ namespace GitSharp.Commands {
 			
 			foreach (string file in allFiles) {
 				
-				switch (Index.ResolveFileStatus(file)) {
+				switch (Index.ResolveFileStatus(new RelativePath(file))) {
 					case File.StatusType.Untracked:
 						untrackedFiles.Add(file);
 						break;
