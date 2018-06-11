@@ -32,6 +32,7 @@ namespace GitSharp.Commands {
 			foreach (string stagedFile in stagedFiles) {
 				Blob blob = GetStagedFileBlob(stagedFile);
 				treeBuilder.AddBlobToTreeHierarchy(blob);
+				Index.CommitFile(new RelativePath(stagedFile));
 			}
 
 			Commit commit = CreateCommit(treeBuilder);
