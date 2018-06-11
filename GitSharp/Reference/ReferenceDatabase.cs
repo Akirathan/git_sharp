@@ -39,12 +39,12 @@ namespace GitSharp.Reference {
 		{
 			foreach (Branch branch in _trackedBranches.Values) {
 				if (branch.IsModified) {
-					// TODO: save branch.
+					SaveBranch(branch);
 				}
 			}
 
 			if (_head != null && _head.IsModified) {
-				SaveBranch(_head);
+				SaveHead();
 			}
 		}
 
@@ -105,13 +105,25 @@ namespace GitSharp.Reference {
 			return Branch.ParseFromString(branchFileContent);
 		}
 		
+		private static void SaveHead()
+		{
+			using (StreamWriter writer = new StreamWriter(HeadFilePath)) {
+				writer.Write(GetBranchFileContent(_head));
+			}
+		}
+
 		private static void SaveBranch(Branch branch)
 		{
 			using (StreamWriter writer =
 				new StreamWriter(BranchDirPath + Path.DirectorySeparatorChar + branch.Name))
 			{
-				writer.Write(branch.GetCommitKey().ToString());
+				writer.Write(GetBranchFileContent(branch));
 			}
+		}
+
+		private static string GetBranchFileContent(Branch branch)
+		{
+			return branch.GetCommitKey().ToString();
 		}
 
 		private static string ReadFile(string fileName)
