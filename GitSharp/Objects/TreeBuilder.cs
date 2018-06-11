@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using GitSharp.Hash;
 
 namespace GitSharp.Objects {
@@ -11,6 +12,18 @@ namespace GitSharp.Objects {
 	internal class TreeBuilder : IStorableGitObject {
 		private IDictionary<string, Blob> _blobs = new Dictionary<string, Blob>();
 		private IDictionary<string, TreeBuilder> _subTrees = new Dictionary<string, TreeBuilder>();
+		private string _dirName;
+		private string _treeBuilderFileContent;
+
+		public static TreeBuilder CreateRootTreeBuilder()
+		{
+			return new TreeBuilder(".");
+		}
+		
+		private TreeBuilder(string dirName)
+		{
+			_dirName = dirName;
+		}
 		
 		public string GetGitObjectFileContent()
 		{
@@ -51,10 +64,31 @@ namespace GitSharp.Objects {
 			}
 
 			if (!_subTrees.ContainsKey(dirNames[i])) {
-				_subTrees.Add(dirNames[i], new TreeBuilder());
+				_subTrees.Add(dirNames[i], new TreeBuilder(dirNames[i]));
 			}
 
 			return _subTrees[dirNames[i]].FindOrCreateSubTree(dirNames, i + 1);
+		}
+
+		private string CreateTreeBuilderFileContent()
+		{
+			StringBuilder contentBuilder = new StringBuilder();
+			
+			contentBuilder.AppendLine(Tree.TreeFileType + " " + _dirName);
+			
+            foreach (KeyValuePair<string, HashKey> pair in blobs) {
+	            HashKey key = pair.Value;
+	            string fileName = pair.Key;
+                contentBuilder.AppendLine("blob " + key.ToString() + " " + fileName);
+            }
+			
+            foreach (KeyValuePair<string, HashKey> pair in subTrees) {
+	            HashKey key = pair.Value;
+	            string subTreeDirName = pair.Key;
+                contentBuilder.AppendLine("tree " + key.ToString() + " " + subTreeDirName);
+            }
+
+			return contentBuilder.ToString();
 		}
 	}
 }

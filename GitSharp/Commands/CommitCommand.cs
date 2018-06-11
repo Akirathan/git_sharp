@@ -21,7 +21,7 @@ namespace GitSharp.Commands {
 				return;
 			}
 
-			TreeBuilder treeBuilder = new TreeBuilder();
+			TreeBuilder treeBuilder = TreeBuilder.CreateRootTreeBuilder();
 			
 			IEnumerable<string> stagedFiles = Index.GetStagedFiles();
 			foreach (string stagedFile in stagedFiles) {
