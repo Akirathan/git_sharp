@@ -1,4 +1,5 @@
-﻿using GitSharp.Hash;
+﻿using System;
+using GitSharp.Hash;
 using GitSharp.Objects;
 
 namespace GitSharp.Reference {
@@ -39,6 +40,11 @@ namespace GitSharp.Reference {
 		public Commit LoadCommit()
 		{
 			return null;
+		}
+
+		public override String ToString()
+		{
+			return Name;
 		}
 	}
 }
