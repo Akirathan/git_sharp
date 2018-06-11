@@ -64,6 +64,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reference\Branch.cs" />
     <Compile Include="Reference\ReferenceDatabase.cs" />
+    <Compile Include="RelativePath.cs" />
     <Compile Include="Traverser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
