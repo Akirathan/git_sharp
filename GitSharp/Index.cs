@@ -99,11 +99,6 @@ namespace GitSharp {
 			       GetRepoFileContentKey(fileName) != Entry.KeyNullValue;
 		}
 
-		private static bool IsDeletedInWdir(string fileName)
-		{
-			return _entries[fileName].WdirKey == RemovedFileKey;
-		}
-		
 		/// <summary>
 		/// Supposes that index is updated (at least for given file)
 		/// </summary>
@@ -199,6 +194,11 @@ namespace GitSharp {
 			if (oldKey != newKey) {
 				entry.WdirKey = newKey;
 			}
+		}
+		
+		private static bool IsDeletedInWdir(string fileName)
+		{
+			return _entries[fileName].WdirKey == RemovedFileKey;
 		}
 		
 		private static ICollection<Entry> GetEntries()
