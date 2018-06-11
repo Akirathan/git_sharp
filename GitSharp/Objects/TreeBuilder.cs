@@ -28,12 +28,18 @@ namespace GitSharp.Objects {
 		
 		public string GetGitObjectFileContent()
 		{
-			throw new System.NotImplementedException();
+			if (_treeBuilderFileContent == null) {
+				_treeBuilderFileContent = CreateTreeBuilderFileContent();
+			}
+			return _treeBuilderFileContent;
 		}
 
 		public HashKey GetChecksum()
 		{
-			throw new System.NotImplementedException();
+			if (_treeBuilderFileContent == null) {
+				_treeBuilderFileContent = CreateTreeBuilderFileContent();
+			}
+			return ContentHasher.HashContent(_treeBuilderFileContent);
 		}
 
 		/// <summary>
