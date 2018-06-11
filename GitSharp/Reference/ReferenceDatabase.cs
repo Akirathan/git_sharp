@@ -55,12 +55,12 @@ namespace GitSharp.Reference {
 		/// <returns></returns>
 		public static Branch GetHead()
 		{
-			string headContent = ReadFile(HeadFilePath);
-			if (headContent == "0" && _head == null) {
+			string headBranchName = ReadFile(HeadFilePath);
+			if (headBranchName == "0" && _head == null) {
                 _head = CreateBranch("master", null);
 			}
 			else if (_head == null) {
-				_head = GetBranch(headContent);
+				_head = GetBranch(headBranchName);
 			}
 			return _head;
 		}
@@ -108,7 +108,7 @@ namespace GitSharp.Reference {
 		private static void SaveHead()
 		{
 			using (StreamWriter writer = new StreamWriter(HeadFilePath)) {
-				writer.Write(GetBranchFileContent(_head));
+				writer.Write(_head.Name);
 			}
 		}
 
