@@ -78,7 +78,7 @@ namespace GitSharp.Objects {
 			return lineItems[0] == "blob";
 		}
 
-		public Tree(string dirName, IDictionary<string, HashKey> blobs, IDictionary<string, HashKey> subTrees)
+		private Tree(string dirName, IDictionary<string, HashKey> blobs, IDictionary<string, HashKey> subTrees)
 		{
 			InitBlobs(blobs);
 			InitSubTrees(subTrees);
