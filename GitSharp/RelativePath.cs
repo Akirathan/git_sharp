@@ -1,7 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace GitSharp {
-	internal class RelativePath {
+	internal class RelativePath : IEquatable<RelativePath> {
 		private string _path;
 		private string _absolutePath;
 		private string _relativeToGitRootPath;
@@ -35,6 +36,11 @@ namespace GitSharp {
 		public string GetAbsolutePath()
 		{
 			return _absolutePath;
+		}
+
+		public bool Equals(RelativePath other)
+		{
+			return _path.Equals(other._path);
 		}
 	}
 }
