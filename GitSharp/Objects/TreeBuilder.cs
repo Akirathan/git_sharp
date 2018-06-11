@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using GitSharp.Hash;
@@ -58,7 +59,13 @@ namespace GitSharp.Objects {
 		
 		private string[] GetAllDirParents(string path)
 		{
-			return path.Split(new char[] {Path.DirectorySeparatorChar});
+			string[] splittedPath = path.Split(new char[] {Path.DirectorySeparatorChar});
+			string[] dirParents = new string[splittedPath.Length - 1];
+			Array.Copy(sourceArray: splittedPath, sourceIndex: 0,
+				destinationArray: dirParents, destinationIndex: 0,
+				length: splittedPath.Length - 1
+				);
+			return dirParents;
 		}
 
 		/// dirNames may be empty.
