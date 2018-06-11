@@ -77,7 +77,7 @@ namespace GitSharp.Objects {
 		/// dirNames may be empty.
 		private TreeBuilder FindOrCreateSubTree(string[] dirNames, int i)
 		{
-			if (dirNames.Length == 0 || i == dirNames.Length - 1) {
+			if (dirNames.Length == 0 || i == dirNames.Length) {
 				return this;
 			}
 
