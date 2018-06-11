@@ -50,8 +50,8 @@ namespace GitSharp.Objects {
 
 				line = reader.ReadLine();
 			}
-			
-			return new Tree(dirName, blobs, subTrees);
+
+			return new Tree(ContentHasher.HashContent(content), dirName, blobs, subTrees);
 		}
 		
 		/// May return null
