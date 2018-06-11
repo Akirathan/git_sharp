@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Mime;
 using System.Text;
@@ -24,10 +25,20 @@ namespace GitSharp {
 		/// This is useful for creating commit objects.
 		/// </summary>
 		/// <param name="commit"></param>
-		/// <returns></returns>
-		public static HashKey StoreCommitWithTreeHierarchy(Commit commit)
+		/// <returns>HashKey to commit</returns>
+		public static HashKey StoreCommitWithTreeHierarchy(Commit commit, TreeBuilder treeBuilder)
 		{
+			List<Blob> allBlobs = new List<Blob>();
+			List<TreeBuilder> allTrees = new List<TreeBuilder>();
+			treeBuilder.GetAllBlobsAndSubTrees(allBlobs, allTrees);
+			foreach (Blob blob in allBlobs) {
+				Store(blob);
+			}
+			foreach (TreeBuilder tree in allTrees) {
+				Store(tree);
+			}
 			
+			return Store(commit);
 		}
 
 		/// <summary>

@@ -30,7 +30,7 @@ namespace GitSharp.Commands {
 			}
 
 			Commit commit = CreateCommit(treeBuilder);
-			StoreCommitAndAdvanceHeadBranch(commit);
+			StoreCommitAndAdvanceHeadBranch(commit, treeBuilder);
 		}
 
 		private Commit CreateCommit(TreeBuilder treeBuilder)
@@ -43,10 +43,10 @@ namespace GitSharp.Commands {
 			return commit;
 		}
 
-		private void StoreCommitAndAdvanceHeadBranch(Commit commit)
+		private void StoreCommitAndAdvanceHeadBranch(Commit commit, TreeBuilder treeBuilder)
 		{
 			Branch currentBranch = ReferenceDatabase.GetHead();
-			HashKey newCommitKey = ObjectDatabase.StoreCommitWithTreeHierarchy(commit);
+			HashKey newCommitKey = ObjectDatabase.StoreCommitWithTreeHierarchy(commit, treeBuilder);
 			currentBranch.SetCommitKey(newCommitKey);
 		}
 
