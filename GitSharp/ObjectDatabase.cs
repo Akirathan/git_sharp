@@ -9,6 +9,7 @@ using GitSharp.Objects;
 namespace GitSharp {
 	internal static class ObjectDatabase {
 		public static readonly string DefaultPath =
+			Traverser.GetRootDirPath() + Path.DirectorySeparatorChar +
 			Traverser.GitRootDirName + Path.DirectorySeparatorChar + "objects";
 
 		public static HashKey Store(IStorableGitObject gitObject)
