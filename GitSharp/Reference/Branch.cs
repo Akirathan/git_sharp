@@ -20,6 +20,7 @@ namespace GitSharp.Reference {
 		/// <param name="commitKey">may be null</param>
 		public Branch(string name, HashKey commitKey)
 		{
+			Name = name;
 			IsModified = false;
 			_commitKey = commitKey;
 		}
