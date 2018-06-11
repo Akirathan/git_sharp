@@ -57,7 +57,7 @@ namespace GitSharp.Commands {
 
 		private Blob GetStagedFileBlob(string stagedFileName)
 		{
-            string stagedFileKey = Index.GetStageFileContentKey(stagedFileName);
+            string stagedFileKey = Index.GetStageFileContentKey(new RelativePath(stagedFileName));
             return ObjectDatabase.RetrieveBlob(HashKey.ParseFromString(stagedFileKey));
 		}
 
