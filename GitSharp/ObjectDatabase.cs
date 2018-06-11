@@ -31,9 +31,7 @@ namespace GitSharp {
 			List<Blob> allBlobs = new List<Blob>();
 			List<TreeBuilder> allTrees = new List<TreeBuilder>();
 			treeBuilder.GetAllBlobsAndSubTrees(allBlobs, allTrees);
-			foreach (Blob blob in allBlobs) {
-				Store(blob);
-			}
+			
 			foreach (TreeBuilder tree in allTrees) {
 				Store(tree);
 			}
