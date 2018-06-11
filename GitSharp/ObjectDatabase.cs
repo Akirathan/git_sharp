@@ -12,10 +12,21 @@ namespace GitSharp {
 			Traverser.GetRootDirPath() + Path.DirectorySeparatorChar +
 			Traverser.GitRootDirName + Path.DirectorySeparatorChar + "objects";
 
+		/// <summary>
+		/// 
+		/// Note that it is not incorrect to call this method with same object more
+		/// than once.
+		/// </summary>
+		/// <param name="gitObject"></param>
+		/// <returns></returns>
 		public static HashKey Store(IStorableGitObject gitObject)
 		{
-			string fileContent = gitObject.GetGitObjectFileContent();
 			HashKey key = gitObject.GetChecksum();
+			if (FileObjectExists(key)) {
+				return key;
+			}
+			
+			string fileContent = gitObject.GetGitObjectFileContent();
 			WriteObjectContentToFile(fileContent, key.ToString());
 			return key;
 		}
@@ -86,6 +97,11 @@ namespace GitSharp {
 			return Commit.ParseFromString(fileContent);
 		}
 		
+		private static bool FileObjectExists(HashKey key)
+		{
+			return System.IO.File.Exists(DefaultPath + Path.DirectorySeparatorChar + key.ToString());
+		}
+
 		private static void WriteObjectContentToFile(string content, string fileName)
 		{
 			StreamWriter writer = null;
