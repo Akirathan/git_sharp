@@ -1,5 +1,11 @@
-﻿namespace GitSharp {
+﻿using System.IO;
+
+namespace GitSharp {
 	internal class RelativePath {
+		private string _path;
+		private string _absolutePath;
+		private string _relativeToGitRootPath;
+		
 		/// <summary>
 		/// 
 		/// </summary>
@@ -8,17 +14,27 @@
 		/// </param>
 		public RelativePath(string path)
 		{
+			_path = path;
 			
-		}
-
-		string GetRelativeToGitRoot()
-		{
+			if (Path.IsPathRooted(_path)) {
+				_absolutePath = _path;
+			}
+			else {
+				_absolutePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + _path;
+			}
+			
 			string gitRootAbsolute = Traverser.GetRootDirPath();
+			_relativeToGitRootPath = _absolutePath.Substring(gitRootAbsolute.Length + 1);
 		}
 
-		string GetAbsolutePath()
+		public string GetRelativeToGitRoot()
 		{
-			return null;
+			return _relativeToGitRootPath;
+		}
+
+		public string GetAbsolutePath()
+		{
+			return _absolutePath;
 		}
 	}
 }
