@@ -6,9 +6,11 @@ using GitSharp.Hash;
 namespace GitSharp.Reference {
 	internal static class ReferenceDatabase {
 		private static readonly string HeadFilePath =
+			Traverser.GetRootDirPath() + Path.DirectorySeparatorChar +
 			Traverser.GitRootDirName + Path.DirectorySeparatorChar + "HEAD";
 
 		private static readonly string RefsDirPath =
+			Traverser.GetRootDirPath() + Path.DirectorySeparatorChar +
 			Traverser.GitRootDirName + Path.DirectorySeparatorChar + "refs";
 
 		private static readonly string BranchDirPath =
