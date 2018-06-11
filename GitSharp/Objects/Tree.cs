@@ -7,10 +7,9 @@ using GitSharp.Hash;
 
 namespace GitSharp.Objects {
 	internal class Tree : IGitObject {
-		private const string TreeFileType = "tree";
+		public const string TreeFileType = "tree";
 		private readonly IDictionary<string, TreeEntry> _subTrees = new Dictionary<string, TreeEntry>();
 		private readonly IDictionary<string, BlobEntry> _blobs = new Dictionary<string, BlobEntry>();
-		private readonly string _treeObjectFileContent;
 		private readonly HashKey _checksum;
 
 		/// <summary>
