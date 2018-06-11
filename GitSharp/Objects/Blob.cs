@@ -22,7 +22,7 @@ namespace GitSharp.Objects {
 			if (fileName == null) {
 				return null;
 			}
-			return new Blob(fileName);
+			return new Blob(new RelativePath(fileName));
 		}
 		
 		private static string ParseFirstLine(string firstLine)
@@ -37,10 +37,10 @@ namespace GitSharp.Objects {
 			return lineItems[1];
 		}
 		
-		public Blob(string fileName)
+		public Blob(RelativePath filePath)
 		{
-			FileName = fileName;
-			using (StreamReader reader = new StreamReader(fileName)) {
+			FileName = filePath.GetRelativeToGitRoot();
+			using (StreamReader reader = new StreamReader(filePath.GetAbsolutePath())) {
 				FileContent = reader.ReadToEnd();
 			}
 			_blobContent = CreateBlobFileContent();
