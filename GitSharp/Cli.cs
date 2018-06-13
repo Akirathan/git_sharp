@@ -7,6 +7,7 @@ namespace GitSharp {
 		private const string StatusCommandName = "status";
 		private const string AddCommandName = "add";
 		private const string CommitCommandName = "commit";
+		private const string LogCommandName = "log";
 		
 		public static Command ParseCommand(string[] args)
 		{
@@ -19,6 +20,9 @@ namespace GitSharp {
 			}
 			if (args[0] == StatusCommandName) {
 				return new StatusCommand();
+			}
+			if (args[0] == LogCommandName) {
+				return new LogCommand();
 			}
 			if (args[0] == AddCommandName) {
 				string[] restOfArgs = new string[args.Length - 1];
