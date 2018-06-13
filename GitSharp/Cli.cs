@@ -10,6 +10,10 @@ namespace GitSharp {
 		
 		public static Command ParseCommand(string[] args)
 		{
+			if (args.Length == 0) {
+				return null;
+			}
+			
 			if (args[0] == InitCommandName) {
 				return new InitCommand();
 			}
