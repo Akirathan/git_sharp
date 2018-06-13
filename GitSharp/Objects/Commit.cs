@@ -30,7 +30,7 @@ namespace GitSharp.Objects {
 			reader.ReadLine();
 			string message = reader.ReadToEnd();
 			
-			if (parentKey == null || treeKey == null) {
+			if (treeKey == null) {
 				return null;
 			}
 			
