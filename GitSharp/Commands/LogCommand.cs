@@ -20,7 +20,6 @@ namespace GitSharp.Commands {
 			Console.WriteLine("commit " + commit.GetChecksum().ToString());
 			Console.WriteLine();
 			Console.WriteLine(commit.Message);
-			Console.WriteLine();
 			Console.WriteLine("Modified files:");
 			PrintAllModifiedFiles(commit);
 			Console.WriteLine("==============================");
@@ -32,7 +31,7 @@ namespace GitSharp.Commands {
 			List<Blob> blobs = new List<Blob>();
 			tree.LoadAndGetAllBlobs(blobs);
 			foreach (Blob blob in blobs) {
-				Console.WriteLine($"  ${blob.FilePath}");
+				Console.WriteLine($"  {blob.FilePath}");
 			}
 		}
 	}
