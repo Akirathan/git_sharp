@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using GitSharp;
 using GitSharp.Commands;
 using GitSharp.Hash;
@@ -7,14 +8,18 @@ using Xunit;
 
 namespace Test {
 	public class CommitTests {
-		[Fact]
-		public void SimpleTest()
+
+		public CommitTests()
 		{
 			if (Directory.Exists(".git_sharp")) {
                 Directory.Delete(".git_sharp", recursive: true);
 			}
 			new InitCommand().Process();
-			
+		}
+		
+		[Fact]
+		public void SimpleTest()
+		{
 			CreateFile("a.txt", "some content");
 			CreateFile("b.txt", "other content");
 			

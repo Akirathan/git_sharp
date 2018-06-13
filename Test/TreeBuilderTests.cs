@@ -9,12 +9,17 @@ using GitSharp.Hash;
 namespace Test {
 	public class TreeBuilderTests {
 
+		public TreeBuilderTests()
+		{
+			if (Directory.Exists(".git_sharp")) {
+                Directory.Delete(".git_sharp", recursive: true);
+			}
+			new InitCommand().Process();
+		}
+
 		[Fact]
 		public void SimpleTest()
 		{
-			Directory.Delete(".git_sharp", recursive: true);
-			new InitCommand().Process();
-			
 			CreateFile("a.txt", "some content");
 			Directory.CreateDirectory("dir");
 			CreateFile("dir/b.txt", "other content");
@@ -37,9 +42,6 @@ namespace Test {
 		[Fact]
 		public void SkipDirTest()
 		{
-			Directory.Delete(".git_sharp", recursive: true);
-			new InitCommand().Process();
-			
 			CreateFile("a.txt", "some content");
 			Directory.CreateDirectory("dir/subdir");
 			CreateFile("dir/subdir/b.txt", "other content");
@@ -65,9 +67,6 @@ namespace Test {
 		[Fact]
 		public void SimpleStoreTest()
 		{
-			Directory.Delete(".git_sharp", recursive: true);
-			new InitCommand().Process();
-			
 			CreateFile("a.txt", "some content");
 			CreateFile("b.txt", "other content");
 			
@@ -86,14 +85,6 @@ namespace Test {
 			Tree retrievedTree = ObjectDatabase.RetrieveTree(keyTreeBuilder);
 			
 			Assert.Equal(treeBuilder.GetChecksum(), retrievedTree.GetChecksum());
-		}
-		
-		[Fact]
-		public void Test1()
-		{
-			Directory.CreateDirectory("dir");
-			CreateFile("dir/b.txt", "Nazdar Pepindo!");
-			TreeBuilder treeBuilder = TreeBuilder.CreateRootTreeBuilder();
 		}
 
 		private void CreateFile(string fileName, string content)

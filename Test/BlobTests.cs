@@ -7,12 +7,18 @@ using GitSharp.Commands;
 
 namespace Test {
 	public class BlobTests {
+
+		public BlobTests()
+		{
+			if (Directory.Exists(".git_sharp")) {
+                Directory.Delete(".git_sharp", recursive: true);
+			}
+			new InitCommand().Process();
+		}
+		
 		[Fact]
 		public void SimpleTest()
 		{
-			Directory.Delete(".git_sharp", recursive: true);
-			new InitCommand().Process();
-			
 			CreateFile("a.txt", "a content");
 			Blob blob = new Blob(new RelativePath("a.txt"));
 			
@@ -25,9 +31,6 @@ namespace Test {
 		[Fact]
 		public void ChangeCwdTest()
 		{
-			Directory.Delete(".git_sharp", recursive: true);
-			new InitCommand().Process();
-
 			Directory.CreateDirectory("dir");
 			CreateFile("dir/a.txt", "a content");
 			
