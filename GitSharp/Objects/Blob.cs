@@ -39,7 +39,8 @@ namespace GitSharp.Objects {
 		
 		public Blob(RelativePath filePath)
 		{
-			FileName = filePath.GetRelativeToGitRoot();
+			FilePath = filePath.GetRelativeToGitRoot();
+			FileName = filePath.GetFileName();
 			using (StreamReader reader = new StreamReader(filePath.GetAbsolutePath())) {
 				FileContent = reader.ReadToEnd();
 			}
@@ -48,6 +49,9 @@ namespace GitSharp.Objects {
 		}
 
 		public string FileContent { get; }
+		
+		/// path to file that is relative to git root directory
+		public string FilePath { get; }
 		
 		public string FileName { get; }
 
@@ -71,7 +75,7 @@ namespace GitSharp.Objects {
 		private string CreateBlobFileContent()
 		{
 			StringBuilder contentBuilder = new StringBuilder();
-			contentBuilder.AppendLine(BlobFileType + " " + FileName);
+			contentBuilder.AppendLine(BlobFileType + " " + FilePath);
 			contentBuilder.Append(FileContent);
 			return contentBuilder.ToString();
 		}
