@@ -46,6 +46,7 @@
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\CommitCommand.cs" />
     <Compile Include="Commands\InitCommand.cs" />
+    <Compile Include="Commands\LogCommand.cs" />
     <Compile Include="Commands\StatusCommand.cs" />
     <Compile Include="Compressor.cs" />
     <Compile Include="File.cs" />
