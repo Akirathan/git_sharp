@@ -7,9 +7,9 @@ using GitSharp.Objects;
 using Xunit;
 
 namespace Test {
-	public class CommitTests {
+	public class CommitObjectsTests {
 
-		public CommitTests()
+		public CommitObjectsTests()
 		{
 			if (Directory.Exists(".git_sharp")) {
                 Directory.Delete(".git_sharp", recursive: true);
