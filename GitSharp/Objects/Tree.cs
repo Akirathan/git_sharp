@@ -98,6 +98,19 @@ namespace GitSharp.Objects {
 		{
 			
 		}
+
+		public void LoadAndGetAllBlobs(List<Blob> blobs)
+		{
+			// Load all blobs
+			foreach (BlobEntry blobEntry in _blobs.Values) {
+				blobs.Add(blobEntry.LoadBlob());
+			}
+			
+			foreach (TreeEntry subTreeEntry in _subTrees.Values) {
+				Tree subTree = subTreeEntry.LoadTree();
+				subTree.LoadAndGetAllBlobs(blobs);
+			}
+		}
 		
 		/// <summary>
 		/// 
