@@ -21,10 +21,11 @@ namespace GitSharp {
 	/// </summary>
 	internal static class Index {
         public static readonly string IndexPath
-	        = Traverser.GitRootDirName + Path.DirectorySeparatorChar + "index";
+	        = Traverser.GetRootDirPath() + Path.DirectorySeparatorChar + Traverser.GitRootDirName
+	          + Path.DirectorySeparatorChar + "index";
 
 		private const string RemovedFileKey = "-";
-		private static Dictionary<string, Entry> _entries = new Dictionary<string, Entry>();
+		private static Dictionary<RelativePath, Entry> _entries = new Dictionary<RelativePath, Entry>();
 		
 		static Index()
 		{
@@ -51,9 +52,15 @@ namespace GitSharp {
 		/// <returns>
 		/// Key representing pointer to blob generated from the file.
 		/// </returns>
-		public static string GetFileBlobKey(string fileName)
+		public static string GetFileBlobKey(RelativePath filePath)
 		{
-			return GetWdirFileContentKey(fileName);
+			return GetWdirFileContentKey(filePath);
+		}
+		
+		public static string GetStageFileContentKey(RelativePath filePath)
+		{
+			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
+			return _entries[filePath].StageKey;
 		}
 
 		/// <summary>
@@ -62,63 +69,68 @@ namespace GitSharp {
 		/// <returns></returns>
 		public static IEnumerable<string> GetAllTrackedFiles()
 		{
-			return _entries.Keys;
+			List<string> fileNames = new List<string>();
+			foreach (RelativePath path in _entries.Keys) {
+				fileNames.Add(path.GetRelativeToGitRoot());
+			}
+			return fileNames;
 		}
 		
-		public static IEnumerable<string> GetStagedFiles()
+		public static List<string> GetStagedFiles()
 		{
-			return null; // TODO:
+			List<string> stagedFileNames = new List<string>();
+			foreach (Entry entry in _entries.Values) {
+				if (IsEntryStaged(entry)) {
+					stagedFileNames.Add(entry.FilePath.GetRelativeToGitRoot());
+				}
+			}
+			return stagedFileNames;
 		}
 
-		public static bool IsModified(string fileName)
+		public static bool IsModified(RelativePath filePath)
 		{
-			return GetWdirFileContentKey(fileName) != GetStageFileContentKey(fileName) &&
-			       GetWdirFileContentKey(fileName) != Entry.KeyNullValue;
+			return GetWdirFileContentKey(filePath) != GetStageFileContentKey(filePath) &&
+			       GetWdirFileContentKey(filePath) != Entry.KeyNullValue;
 		}
 		
-		public static bool IsStaged(string fileName)
+		public static bool IsStaged(RelativePath filePath)
 		{
-			return GetWdirFileContentKey(fileName) == GetStageFileContentKey(fileName) &&
-			       GetStageFileContentKey(fileName) != GetRepoFileContentKey(fileName) &&
-			       GetWdirFileContentKey(fileName) != Entry.KeyNullValue &&
-			       GetStageFileContentKey(fileName) != Entry.KeyNullValue;
+			return GetWdirFileContentKey(filePath) == GetStageFileContentKey(filePath) &&
+			       GetStageFileContentKey(filePath) != GetRepoFileContentKey(filePath) &&
+			       GetWdirFileContentKey(filePath) != Entry.KeyNullValue &&
+			       GetStageFileContentKey(filePath) != Entry.KeyNullValue;
 		}
 
-		public static bool IsCommited(string fileName)
+		public static bool IsCommited(RelativePath filePath)
 		{
-			return GetWdirFileContentKey(fileName) == GetStageFileContentKey(fileName) &&
-			       GetStageFileContentKey(fileName) == GetRepoFileContentKey(fileName) &&
-			       GetWdirFileContentKey(fileName) != Entry.KeyNullValue &&
-			       GetStageFileContentKey(fileName) != Entry.KeyNullValue &&
-			       GetRepoFileContentKey(fileName) != Entry.KeyNullValue;
+			return GetWdirFileContentKey(filePath) == GetStageFileContentKey(filePath) &&
+			       GetStageFileContentKey(filePath) == GetRepoFileContentKey(filePath) &&
+			       GetWdirFileContentKey(filePath) != Entry.KeyNullValue &&
+			       GetStageFileContentKey(filePath) != Entry.KeyNullValue &&
+			       GetRepoFileContentKey(filePath) != Entry.KeyNullValue;
 		}
 
-		private static bool IsDeletedInWdir(string fileName)
-		{
-			return _entries[fileName].WdirKey == RemovedFileKey;
-		}
-		
 		/// <summary>
 		/// Supposes that index is updated (at least for given file)
 		/// </summary>
 		/// <param name="fileName"></param>
 		/// <returns></returns>
-		public static File.StatusType ResolveFileStatus(string fileName)
+		public static File.StatusType ResolveFileStatus(RelativePath filePath)
 		{
-			if (!ContainsFile(fileName)) {
+			if (!ContainsFile(filePath)) {
 				return File.StatusType.Untracked;
 			}
 
-            if (IsCommited(fileName)) {
+            if (IsCommited(filePath)) {
                 return File.StatusType.Commited;
             }
-            if (IsStaged(fileName)) {
+            if (IsStaged(filePath)) {
                 return File.StatusType.Staged;
             }
-			if (IsDeletedInWdir(fileName)) {
+			if (IsDeletedInWdir(filePath)) {
 				return File.StatusType.Deleted;
 			}
-			if (IsModified(fileName)) {
+			if (IsModified(filePath)) {
 				return File.StatusType.Modified;
 			}
 			
@@ -130,31 +142,31 @@ namespace GitSharp {
 		/// </summary>
 		/// <param name="fileName"></param>
 		/// <returns></returns>
-		public static bool ContainsFile(string fileName)
+		public static bool ContainsFile(RelativePath filePath)
 		{
-			return _entries.ContainsKey(fileName);
+			return _entries.ContainsKey(filePath);
 		}
 		
-		public static void StageFile(string fileName)
+		public static void StageFile(RelativePath filePath)
 		{
-			SetStageFileContentKey(fileName, GetWdirFileContentKey(fileName));
+			SetStageFileContentKey(filePath, GetWdirFileContentKey(filePath));
 		}
 
-		public static void CommitFile(string fileName)
+		public static void CommitFile(RelativePath filePath)
 		{
-			SetRepoFileContentKey(fileName, GetStageFileContentKey(fileName));
+			SetRepoFileContentKey(filePath, GetStageFileContentKey(filePath));
 		}
 
 		/// <summary>
 		/// Adds given file into the Index ie. starts tracking this file.
 		/// </summary>
 		/// <param name="fileName"></param>
-		public static void StartTrackingFile(string fileName)
+		public static void StartTrackingFile(RelativePath filePath)
 		{
-			Debug.Assert(!_entries.ContainsKey(fileName), "File can be added into index just once");
+			Debug.Assert(!_entries.ContainsKey(filePath), "File can be added into index just once");
 			
-			Entry entry = new Entry(fileName);
-			_entries.Add(fileName, entry);
+			Entry entry = new Entry(filePath);
+			_entries.Add(filePath, entry);
 		}
 		
 		/// <summary>
@@ -174,25 +186,38 @@ namespace GitSharp {
 		/// Updates wdir content version of given file
 		/// </summary>
 		/// <param name="fileName"></param>
-		public static void UpdateFileInWdir(string fileName)
+		public static void UpdateFileInWdir(RelativePath filePath)
 		{
-			Debug.Assert(_entries.ContainsKey(fileName));
-			UpdateEntryIfNecessary(_entries[fileName]);
+			Debug.Assert(_entries.ContainsKey(filePath));
+			UpdateEntryIfNecessary(_entries[filePath]);
 		}
 		
 		private static void UpdateEntryIfNecessary(Entry entry)
 		{
-			if (!System.IO.File.Exists(entry.FileName)) {
+			if (!System.IO.File.Exists(entry.FilePath.GetAbsolutePath())) {
 				entry.WdirKey = RemovedFileKey;
 				return;
 			}
 			
-			Blob blob = new Blob(entry.FileName);
+			Blob blob = new Blob(entry.FilePath);
 			string oldKey = entry.WdirKey;
-			string newKey = blob.Checksum.ToString();
+			string newKey = blob.GetChecksum().ToString();
 			if (oldKey != newKey) {
 				entry.WdirKey = newKey;
 			}
+		}
+		
+		private static bool IsEntryStaged(Entry entry)
+		{
+			return entry.WdirKey == entry.StageKey &&
+			       entry.StageKey != entry.RepoKey &&
+			       entry.WdirKey != Entry.KeyNullValue &&
+			       entry.StageKey != Entry.KeyNullValue;
+		}
+
+		private static bool IsDeletedInWdir(RelativePath filePath)
+		{
+			return _entries[filePath].WdirKey == RemovedFileKey;
 		}
 		
 		private static ICollection<Entry> GetEntries()
@@ -202,25 +227,19 @@ namespace GitSharp {
 
 		private static void AddEntry(Entry entry)
 		{
-			if (_entries.ContainsKey(entry.FileName)) {
+			if (_entries.ContainsKey(entry.FilePath)) {
 				throw new Exception("index format error: file already specified in index");
 			}
 			
-			_entries.Add(entry.FileName, entry);
+			_entries.Add(entry.FilePath, entry);
 		}
 		
-		private static string GetWdirFileContentKey(string fileName)
+		private static string GetWdirFileContentKey(RelativePath filePath)
 		{
-			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			string wdirContentKey = _entries[fileName].WdirKey;
+			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
+			string wdirContentKey = _entries[filePath].WdirKey;
 			Debug.Assert(wdirContentKey != Entry.KeyNullValue, "wdir file content must be first set");
 			return wdirContentKey;
-		}
-		
-		private static string GetStageFileContentKey(string fileName)
-		{
-			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			return _entries[fileName].StageKey;
 		}
 		
 		/// <summary>
@@ -230,28 +249,28 @@ namespace GitSharp {
 		/// <returns>
 		/// null when file was never commited.
 		/// </returns>
-		private static string GetRepoFileContentKey(string fileName)
+		private static string GetRepoFileContentKey(RelativePath filePath)
 		{
-			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			return _entries[fileName].RepoKey;
+			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
+			return _entries[filePath].RepoKey;
 		}
 		
-		private static void SetStageFileContentKey(string fileName, string key)
+		private static void SetStageFileContentKey(RelativePath filePath, string key)
 		{
-			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			_entries[fileName].StageKey = key;
+			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
+			_entries[filePath].StageKey = key;
 		}
 		
-		private static void SetRepoFileContentKey(string fileName, string key)
+		private static void SetRepoFileContentKey(RelativePath filePath, string key)
 		{
-			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			_entries[fileName].RepoKey = key;
+			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
+			_entries[filePath].RepoKey = key;
 		}
 		
-		private static void SetWdirFileContentKey(string fileName, string key)
+		private static void SetWdirFileContentKey(RelativePath filePath, string key)
 		{
-			Debug.Assert(_entries.ContainsKey(fileName), "file has to be in index");
-			_entries[fileName].WdirKey = key;
+			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
+			_entries[filePath].WdirKey = key;
 		}
 
 		private class Entry {
@@ -263,13 +282,13 @@ namespace GitSharp {
 				if (lineItems.Length != 4) {
 					return null;
 				}
-				return new Entry(lineItems[0], lineItems[1], lineItems[2], lineItems[3]);
+				return new Entry(new RelativePath(lineItems[0]), lineItems[1], lineItems[2], lineItems[3]);
 			}
 
 			public static string PrintToLine(Entry entry)
 			{
 				StringBuilder lineBuilder = new StringBuilder();
-				lineBuilder.Append(entry.FileName);
+				lineBuilder.Append(entry.FilePath.GetRelativeToGitRoot());
 				lineBuilder.Append(" ");
 				lineBuilder.Append(entry.WdirKey);
 				lineBuilder.Append(" ");
@@ -280,19 +299,19 @@ namespace GitSharp {
 				return lineBuilder.ToString();
 			}
 
-			public Entry(string fileName) : this(fileName, KeyNullValue, KeyNullValue, KeyNullValue)
+			public Entry(RelativePath filePath) : this(filePath, KeyNullValue, KeyNullValue, KeyNullValue)
 			{
 			}
 
-			public Entry(string fileName, string wdirKey, string stageKey, string repoKey)
+			private Entry(RelativePath filePath, string wdirKey, string stageKey, string repoKey)
 			{
-				FileName = fileName;
+				FilePath = filePath;
 				WdirKey = wdirKey;
 				StageKey = stageKey;
 				RepoKey = repoKey;
 			}
 			
-			public string FileName { get; set; }
+			public RelativePath FilePath { get; set; }
 			public string WdirKey { get; set; }
 			public string StageKey { get; set; }
 			public string RepoKey { get; set; }

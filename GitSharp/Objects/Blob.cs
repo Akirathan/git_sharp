@@ -10,39 +10,60 @@ namespace GitSharp.Objects {
 	/// Checksum method gives key which is used for storing and retrieving this blob
 	/// object from ObjectDatabase.
 	/// </summary>
-	internal class Blob : GitObject, IEquatable<Blob> {
+	internal class Blob : IStorableGitObject, IEquatable<Blob> {
 		private const string BlobFileType = "blob";
+		private string _blobContent;
+		private HashKey _checksum;
 
 		public static Blob ParseFromString(string content)
 		{
 			StringReader reader = new StringReader(content);
-			if (reader.ReadLine() != BlobFileType) {
+			string fileName = ParseFirstLine(reader.ReadLine());
+			if (fileName == null) {
 				return null;
 			}
-			return new Blob(reader.ReadToEnd());
+			return new Blob(new RelativePath(fileName));
 		}
 		
-		public Blob(string fileName)
+		private static string ParseFirstLine(string firstLine)
 		{
-			FileName = fileName;
-			using (StreamReader reader = new StreamReader(fileName)) {
+			if (firstLine == null) {
+				return null;
+			}
+			string[] lineItems = firstLine.Split(new char[] {' '});
+			if (lineItems[0] != BlobFileType || lineItems.Length != 2) {
+				return null;
+			}
+			return lineItems[1];
+		}
+		
+		public Blob(RelativePath filePath)
+		{
+			FilePath = filePath.GetRelativeToGitRoot();
+			FileName = filePath.GetFileName();
+			using (StreamReader reader = new StreamReader(filePath.GetAbsolutePath())) {
 				FileContent = reader.ReadToEnd();
 			}
-			BlobContent = CreateBlobFileContent();
-			Checksum = ContentHasher.HashContent(BlobContent);
+			_blobContent = CreateBlobFileContent();
+			_checksum = ContentHasher.HashContent(_blobContent);
 		}
 
 		public string FileContent { get; }
 		
-		public string FileName { get; }
+		/// path to file that is relative to git root directory
+		public string FilePath { get; }
 		
-		/// <summary>
-		/// Returns a string representing text of blob file.
-		/// Contains filename alongside with filecontent
-		/// </summary>
-		public string BlobContent { get; }
+		public string FileName { get; }
 
-		public HashKey Checksum { get; }
+		public string GetGitObjectFileContent()
+		{
+			return _blobContent;
+		}
+
+		public HashKey GetChecksum()
+		{
+			return _checksum;
+		}
 
 		public bool Equals(Blob other)
 		{
@@ -54,7 +75,7 @@ namespace GitSharp.Objects {
 		private string CreateBlobFileContent()
 		{
 			StringBuilder contentBuilder = new StringBuilder();
-			contentBuilder.AppendLine(BlobFileType + " " + FileName);
+			contentBuilder.AppendLine(BlobFileType + " " + FilePath);
 			contentBuilder.Append(FileContent);
 			return contentBuilder.ToString();
 		}

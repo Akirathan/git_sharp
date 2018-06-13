@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Mime;
 using System.Text;
@@ -8,21 +9,46 @@ using GitSharp.Objects;
 namespace GitSharp {
 	internal static class ObjectDatabase {
 		public static readonly string DefaultPath =
+			Traverser.GetRootDirPath() + Path.DirectorySeparatorChar +
 			Traverser.GitRootDirName + Path.DirectorySeparatorChar + "objects";
 
-		public static HashKey Store(Blob blob)
+		/// <summary>
+		/// 
+		/// Note that it is not incorrect to call this method with same object more
+		/// than once.
+		/// </summary>
+		/// <param name="gitObject"></param>
+		/// <returns></returns>
+		public static HashKey Store(IStorableGitObject gitObject)
 		{
-			HashKey key = blob.Checksum;
-			WriteObjectContentToFile(blob.BlobContent, key.ToString());
+			HashKey key = gitObject.GetChecksum();
+			if (FileObjectExists(key)) {
+				return key;
+			}
+			
+			string fileContent = gitObject.GetGitObjectFileContent();
+			WriteObjectContentToFile(fileContent, key.ToString());
 			return key;
 		}
 
-		public static HashKey Store(Tree tree)
+		/// <summary>
+		/// Stores given commit, its root tree and all the subtrees of the root tree
+		/// in the ObjectDatabase.
+		/// This is useful for creating commit objects.
+		/// </summary>
+		/// <param name="commit"></param>
+		/// <returns>HashKey to commit</returns>
+		public static HashKey StoreCommitWithTreeHierarchy(Commit commit, TreeBuilder treeBuilder)
 		{
-			string treeFileContent = Tree.CreateTreeFileContent(tree);
-			HashKey key = ContentHasher.HashContent(treeFileContent);
-			WriteObjectContentToFile(treeFileContent, key.ToString());
-			return key;
+			List<Blob> allBlobs = new List<Blob>();
+			List<TreeBuilder> allTrees = new List<TreeBuilder>();
+			treeBuilder.GetAllBlobsAndSubTrees(allBlobs, allTrees);
+			
+			foreach (TreeBuilder tree in allTrees) {
+				Store(tree);
+			}
+			
+			return Store(commit);
 		}
 
 		/// <summary>
@@ -59,7 +85,23 @@ namespace GitSharp {
 
 			return Tree.ParseFromString(fileContent);
 		}
+
+		public static Commit RetrieveCommit(HashKey key)
+		{
+			string fileName = key.ToString();
+			string fileContent = ReadFileContent(fileName);
+			if (fileContent == null) {
+				return null;
+			}
+
+			return Commit.ParseFromString(fileContent);
+		}
 		
+		private static bool FileObjectExists(HashKey key)
+		{
+			return System.IO.File.Exists(DefaultPath + Path.DirectorySeparatorChar + key.ToString());
+		}
+
 		private static void WriteObjectContentToFile(string content, string fileName)
 		{
 			StreamWriter writer = null;

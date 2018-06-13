@@ -18,7 +18,7 @@ namespace GitSharp.Hash {
 		/// <returns>null if parsing fails</returns>
 		public static HashKey ParseFromString(string content)
 		{
-			if (content.Length % 2 != 0) {
+			if (content == "0" || content.Length % 2 != 0) {
 				return null;
 			}
 			byte[] bytes = new byte[content.Length / 2];

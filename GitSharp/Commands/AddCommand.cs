@@ -7,8 +7,8 @@ using GitSharp.Objects;
 namespace GitSharp.Commands {
 	internal class AddCommand : Command {
 		private string[] _args;
-		private IList<string> _encounteredIgnoredFiles = new List<string>();
-		private IList<string> _files = new List<string>();
+		private IList<RelativePath> _encounteredIgnoredFiles = new List<RelativePath>();
+		private IList<RelativePath> _files = new List<RelativePath>();
 		private ISet<Option> _options = new HashSet<Option>();
 
 		private enum Option {
@@ -31,7 +31,7 @@ namespace GitSharp.Commands {
 				return;
 			}
 
-			foreach (string file in _files) {
+			foreach (RelativePath file in _files) {
 				AddFile(file);
 			}
 			
@@ -43,7 +43,7 @@ namespace GitSharp.Commands {
 			foreach (string arg in _args) {
 				if (IsArgument(arg)) {
 					if (IsFile(arg)) {
-						_files.Add(arg);
+						_files.Add(new RelativePath(arg));
 					}
 					else if (IsDirectory(arg)) {
 						if (!ProcessDirectoryArgument(arg)) {
@@ -51,7 +51,7 @@ namespace GitSharp.Commands {
 						}
 					}
 					else if (FileDeletedFromWdir(arg)) {
-						_files.Add(arg);
+						_files.Add(new RelativePath(arg));
 					}
 					else {
 						PrintNonExistingFileError(arg);
@@ -81,7 +81,7 @@ namespace GitSharp.Commands {
 			IEnumerable<string> files = Directory.EnumerateFiles(dirPath, "*", SearchOption.AllDirectories);
 			foreach (string file in files) {
 				if (IsFile(file)) {
-					_files.Add(file);
+					_files.Add(new RelativePath(file));
 				}
 				else {
 					PrintNonExistingFileError(file);
@@ -104,8 +104,8 @@ namespace GitSharp.Commands {
 			}
 			
 			Console.WriteLine("Warning: following files are ignored:");
-			foreach (string ignoredFile in _encounteredIgnoredFiles) {
-				Console.WriteLine($"  {ignoredFile}");
+			foreach (RelativePath ignoredFilePath in _encounteredIgnoredFiles) {
+				Console.WriteLine($"  {ignoredFilePath.GetRelativeToGitRoot()}");
 			}
 			Console.WriteLine("specify -f flag if you want to add them");
 		}
@@ -132,42 +132,42 @@ namespace GitSharp.Commands {
 		
 		private bool FileDeletedFromWdir(string fileName)
 		{
-			return Index.ContainsFile(fileName) && !System.IO.File.Exists(fileName);
+			return Index.ContainsFile(new RelativePath(fileName)) && !System.IO.File.Exists(fileName);
 		}
 
 		/// Supposes that fileName is existing file
-		private void AddFile(string fileName)
+		private void AddFile(RelativePath filePath)
 		{
-			if (!Index.ContainsFile(fileName)) {
-				Index.StartTrackingFile(fileName);
+			if (!Index.ContainsFile(filePath)) {
+				Index.StartTrackingFile(filePath);
 			}
 			
-			Index.UpdateFileInWdir(fileName);
-			File.StatusType fileStatus = Index.ResolveFileStatus(fileName);
+			Index.UpdateFileInWdir(filePath);
+			File.StatusType fileStatus = Index.ResolveFileStatus(filePath);
 			
 			switch (fileStatus) {
 				case File.StatusType.Untracked:
 				case File.StatusType.Modified:
-					CreateAndStoreBlob(fileName);
-					Index.StageFile(fileName);
+					CreateAndStoreBlob(filePath);
+					Index.StageFile(filePath);
 					break;
 				case File.StatusType.Staged:
 				case File.StatusType.Commited:
 					break;
                 case File.StatusType.Deleted:
-	                Index.StageFile(fileName);
+	                Index.StageFile(filePath);
                     break;
 				case File.StatusType.Ignored:
-					_encounteredIgnoredFiles.Add(fileName);
+					_encounteredIgnoredFiles.Add(filePath);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
 		}
 
-		private HashKey CreateAndStoreBlob(string fileName)
+		private HashKey CreateAndStoreBlob(RelativePath filePath)
 		{
-			Blob blob = new Blob(fileName);
+			Blob blob = new Blob(filePath);
 			return ObjectDatabase.Store(blob);
 		}
 	}

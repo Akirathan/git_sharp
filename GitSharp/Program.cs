@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
 using GitSharp.Commands;
-using GitSharp.Objects;
-using GitSharp.Hash;
+using GitSharp.Reference;
 
 namespace GitSharp {
 	internal class Program {
@@ -30,6 +25,7 @@ namespace GitSharp {
 			command.Process();
 			
 			Index.Dispose();
+			ReferenceDatabase.Dispose();
 		}
 
 		private static void PrintHelp()
