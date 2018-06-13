@@ -14,6 +14,7 @@ namespace GitSharp {
 		private string _path;
 		private string _absolutePath;
 		private string _relativeToGitRootPath;
+		private string _fileName;
 		
 		/// <summary>
 		/// 
@@ -37,6 +38,8 @@ namespace GitSharp {
                     _absolutePath = cwd + Path.DirectorySeparatorChar + _path;
 				}
 			}
+
+			_fileName = GetLastPartOfPath(_path);
 			
 			string gitRootAbsolute = Traverser.GetRootDirPath();
 			_relativeToGitRootPath = _absolutePath.Substring(gitRootAbsolute.Length + 1);
@@ -50,6 +53,15 @@ namespace GitSharp {
 		public string GetAbsolutePath()
 		{
 			return _absolutePath;
+		}
+
+		/// <summary>
+		/// Returns file name or directory name this RelativePath directs to.
+		/// </summary>
+		/// <returns></returns>
+		public string GetFileName()
+		{
+			return _fileName;
 		}
 
 		public bool Equals(RelativePath other)
@@ -70,6 +82,12 @@ namespace GitSharp {
 		public override int GetHashCode()
 		{
 			return _path.GetHashCode();
+		}
+
+		private string GetLastPartOfPath(string path)
+		{
+			string[] pathItems = path.Split(new char[] {Path.DirectorySeparatorChar});
+			return pathItems[pathItems.Length - 1];
 		}
 
 		private bool PathsIntersects(string pathA, string pathB)
