@@ -4,6 +4,7 @@ using GitSharp;
 using Xunit;
 using GitSharp.Objects;
 using GitSharp.Commands;
+using GitSharp.Hash;
 
 namespace Test {
 	public class TreeBuilderTests {
@@ -11,6 +12,7 @@ namespace Test {
 		[Fact]
 		public void SimpleTest()
 		{
+			Directory.Delete(".git_sharp", recursive: true);
 			new InitCommand().Process();
 			
 			CreateFile("a.txt", "some content");
@@ -35,6 +37,7 @@ namespace Test {
 		[Fact]
 		public void SkipDirTest()
 		{
+			Directory.Delete(".git_sharp", recursive: true);
 			new InitCommand().Process();
 			
 			CreateFile("a.txt", "some content");
@@ -54,6 +57,35 @@ namespace Test {
 			
 			Assert.Equal(allBlobs.Count, 2);
 			Assert.Equal(allTrees.Count, 3);
+		}
+
+		/// Creates Blobs, TreeBuilder and store those into ObjectDatabase.
+		/// Then retrieves Tree from the database and checks whether that
+		/// tree corresponds to treebuilder.
+		[Fact]
+		public void SimpleStoreTest()
+		{
+			Directory.Delete(".git_sharp", recursive: true);
+			new InitCommand().Process();
+			
+			CreateFile("a.txt", "some content");
+			CreateFile("b.txt", "other content");
+			
+			Blob blobA = CreateBlob("a.txt");
+			Blob blobB = CreateBlob("b.txt");
+
+			HashKey keyBlobA = ObjectDatabase.Store(blobA);
+			HashKey keyBlobB = ObjectDatabase.Store(blobB);
+			
+			TreeBuilder treeBuilder = TreeBuilder.CreateRootTreeBuilder();
+			treeBuilder.AddBlobToTreeHierarchy(blobA);
+			treeBuilder.AddBlobToTreeHierarchy(blobB);
+
+			HashKey keyTreeBuilder = ObjectDatabase.Store(treeBuilder);
+
+			Tree retrievedTree = ObjectDatabase.RetrieveTree(keyTreeBuilder);
+			
+			Assert.Equal(treeBuilder.GetChecksum(), retrievedTree.GetChecksum());
 		}
 		
 		[Fact]
