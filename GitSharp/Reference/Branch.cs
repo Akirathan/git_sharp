@@ -39,7 +39,10 @@ namespace GitSharp.Reference {
 
 		public Commit LoadCommit()
 		{
-			return null;
+			if (_commit == null) {
+				_commit = ObjectDatabase.RetrieveCommit(_commitKey);
+			}
+			return _commit;
 		}
 
 		public override String ToString()
