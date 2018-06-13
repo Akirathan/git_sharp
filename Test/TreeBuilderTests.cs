@@ -33,6 +33,30 @@ namespace Test {
 		}
 		
 		[Fact]
+		public void SkipDirTest()
+		{
+			new InitCommand().Process();
+			
+			CreateFile("a.txt", "some content");
+			Directory.CreateDirectory("dir/subdir");
+			CreateFile("dir/subdir/b.txt", "other content");
+			
+			Blob blobA = CreateBlob("a.txt");
+			Blob blobB = CreateBlob("dir/subdir/b.txt");
+			
+			TreeBuilder treeBuilder = TreeBuilder.CreateRootTreeBuilder();
+			treeBuilder.AddBlobToTreeHierarchy(blobA);
+			treeBuilder.AddBlobToTreeHierarchy(blobB);
+
+			List<Blob> allBlobs = new List<Blob>();
+			List<TreeBuilder> allTrees = new List<TreeBuilder>();
+			treeBuilder.GetAllBlobsAndSubTrees(allBlobs, allTrees);
+			
+			Assert.Equal(allBlobs.Count, 2);
+			Assert.Equal(allTrees.Count, 3);
+		}
+		
+		[Fact]
 		public void Test1()
 		{
 			Directory.CreateDirectory("dir");
