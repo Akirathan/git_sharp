@@ -31,7 +31,7 @@ namespace GitSharp {
 		private static void PrintHelp()
 		{
 			Console.WriteLine("Unrecognized command.");
-			Console.WriteLine("usage: \"git (init|status|add)\"");
+			Console.WriteLine("usage: \"git (init|status|add|log)\"");
 		}
 
 		private static bool IsRepositoryInitialized()
