@@ -102,7 +102,7 @@ namespace GitSharp.Reference {
 		private static Branch ReadBranchFromFile(string branchName)
 		{
             string branchFileContent = ReadFile(BranchDirPath + Path.DirectorySeparatorChar + branchName);
-			return Branch.ParseFromString(branchFileContent);
+			return Branch.ParseFromString(branchName, branchFileContent);
 		}
 		
 		private static void SaveHead()

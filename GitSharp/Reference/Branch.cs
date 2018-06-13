@@ -4,9 +4,10 @@ using GitSharp.Objects;
 
 namespace GitSharp.Reference {
 	internal class Branch {
-		public static Branch ParseFromString(string content)
+		public static Branch ParseFromString(string branchName, string content)
 		{
-			return null;
+			HashKey commitKey = ContentHasher.HashContent(content);
+			return new Branch(branchName, commitKey);
 		}
 
 		public string Name { get; }
