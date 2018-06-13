@@ -170,21 +170,14 @@ namespace GitSharp.Objects {
 
 		private Blob FindAndLoadBlob(string[] dirHierarchy, int i)
 		{
-			if (dirHierarchy.Length == 1) {
-				if (!_blobs.ContainsKey(dirHierarchy[0])) {
+			if (i == dirHierarchy.Length - 1) {
+				if (!_blobs.ContainsKey(dirHierarchy[i])) {
 					return null;
 				}
-				return _blobs[dirHierarchy[0]].LoadBlob();
+				return _blobs[dirHierarchy[i]].LoadBlob();
 			}
 
-			if (i == dirHierarchy.Length - 2) {
-				if (!_blobs.ContainsKey(dirHierarchy[i + 1])) {
-					return null;
-				}
-				return _blobs[dirHierarchy[i + 1]].LoadBlob();
-			}
-
-			TreeEntry subTreeEntry = _subTrees[dirHierarchy[i + 1]];
+			TreeEntry subTreeEntry = _subTrees[dirHierarchy[i]];
 			return subTreeEntry.LoadTree().FindAndLoadBlob(dirHierarchy, i + 1);
 		}
 
