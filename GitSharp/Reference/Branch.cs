@@ -6,7 +6,7 @@ namespace GitSharp.Reference {
 	internal class Branch {
 		public static Branch ParseFromString(string branchName, string content)
 		{
-			HashKey commitKey = ContentHasher.HashContent(content);
+			HashKey commitKey = HashKey.ParseFromString(content);
 			return new Branch(branchName, commitKey);
 		}
 
