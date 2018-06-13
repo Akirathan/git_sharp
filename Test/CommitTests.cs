@@ -37,6 +37,48 @@ namespace Test {
 			Assert.Equal(blobB, retrievedBlobB);
 		}
 
+		[Fact]
+		public void MoreDirectoriesTest()
+		{
+			CreateFile("a.txt", "some content");
+			Directory.CreateDirectory("dir");
+			CreateFile("dir/b.txt", "other content");
+			
+			Blob blobA = new Blob(new RelativePath("a.txt"));
+			Blob blobB = new Blob(new RelativePath("dir/b.txt"));
+
+			HashKey commitKey = CreateAndStoreSimpleCommit(new Blob[]{blobA, blobB});
+			Commit commit = ObjectDatabase.RetrieveCommit(commitKey);
+
+			Tree tree = commit.LoadTree();
+			Blob retrievedBlobA = tree.FindAndLoadBlob("a.txt");
+			Blob retrievedBlobB = tree.FindAndLoadBlob("dir/b.txt");
+			
+			Assert.Equal(blobA, retrievedBlobA);
+			Assert.Equal(blobB, retrievedBlobB);
+		}
+		
+		[Fact]
+		public void SkipDirectoryTest()
+		{
+			CreateFile("a.txt", "some content");
+			Directory.CreateDirectory("dir/subdir");
+			CreateFile("dir/subdir/b.txt", "other content");
+			
+			Blob blobA = new Blob(new RelativePath("a.txt"));
+			Blob blobB = new Blob(new RelativePath("dir/subdir/b.txt"));
+
+			HashKey commitKey = CreateAndStoreSimpleCommit(new Blob[]{blobA, blobB});
+			Commit commit = ObjectDatabase.RetrieveCommit(commitKey);
+
+			Tree tree = commit.LoadTree();
+			Blob retrievedBlobA = tree.FindAndLoadBlob("a.txt");
+			Blob retrievedBlobB = tree.FindAndLoadBlob("dir/subdir/b.txt");
+			
+			Assert.Equal(blobA, retrievedBlobA);
+			Assert.Equal(blobB, retrievedBlobB);
+		}
+
 		private HashKey CreateAndStoreSimpleCommit(Blob[] blobs)
 		{
 			HashKey[] blobKeys = new HashKey[blobs.Length];
