@@ -26,6 +26,11 @@ namespace GitSharp.Objects {
 			_dirName = dirName;
 		}
 		
+		/// <summary>
+		/// This method should be called after all the contents of tree is added ie.
+		/// after every Blob was added via AddBlobToTreeHierarchy method call.
+		/// </summary>
+		/// <returns></returns>
 		public string GetGitObjectFileContent()
 		{
 			if (_treeBuilderFileContent == null) {
@@ -34,6 +39,11 @@ namespace GitSharp.Objects {
 			return _treeBuilderFileContent;
 		}
 
+		/// <summary>
+		/// This method should be called after all the contents of tree is added ie.
+		/// after every Blob was added via AddBlobToTreeHierarchy method call.
+		/// </summary>
+		/// <returns></returns>
 		public HashKey GetChecksum()
 		{
 			if (_treeBuilderFileContent == null) {
@@ -49,7 +59,7 @@ namespace GitSharp.Objects {
 		/// <param name="blob"></param>
 		public void AddBlobToTreeHierarchy(Blob blob)
 		{
-			TreeBuilder subTreeBuilder = FindOrCreateSubTree(GetAllDirParents(blob.FileName), 0);
+			TreeBuilder subTreeBuilder = FindOrCreateSubTree(GetAllDirParents(blob.FilePath), 0);
 			subTreeBuilder.AddBlob(blob);
 		}
 		
