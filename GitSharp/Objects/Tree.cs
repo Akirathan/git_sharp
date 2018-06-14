@@ -96,7 +96,9 @@ namespace GitSharp.Objects {
 		
 		public bool Checkout()
 		{
-			Directory.SetCurrentDirectory(DirName);
+			if (!IsRootTree()) {
+                Directory.SetCurrentDirectory(DirName);
+			}
 
 			foreach (BlobEntry blobEntry in _blobs.Values) {
 				if (!blobEntry.LoadBlob().Checkout()) {
@@ -109,8 +111,10 @@ namespace GitSharp.Objects {
 					return false;
 				}
 			}
-			
-			Directory.SetCurrentDirectory("..");
+
+			if (!IsRootTree()) {
+                Directory.SetCurrentDirectory("..");
+			}
 			return true;
 		}
 
@@ -149,6 +153,11 @@ namespace GitSharp.Objects {
 		public Blob FindAndLoadBlob(string filePath)
 		{
 			return FindAndLoadBlob(GetAllDirParents(filePath), 0);
+		}
+
+		private bool IsRootTree()
+		{
+			return DirName == ".";
 		}
 
 		private void InitBlobs(IDictionary<string, HashKey> blobs)
