@@ -62,6 +62,19 @@ namespace GitSharp {
 			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
 			return _entries[filePath].StageKey;
 		}
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <returns>
+		/// null when file was never commited.
+		/// </returns>
+		public static string GetRepoFileContentKey(RelativePath filePath)
+		{
+			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
+			return _entries[filePath].RepoKey;
+		}
 
 		/// <summary>
 		/// Returns all the files that are in the index ie. all tracked files.
@@ -240,19 +253,6 @@ namespace GitSharp {
 			string wdirContentKey = _entries[filePath].WdirKey;
 			Debug.Assert(wdirContentKey != Entry.KeyNullValue, "wdir file content must be first set");
 			return wdirContentKey;
-		}
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="fileName"></param>
-		/// <returns>
-		/// null when file was never commited.
-		/// </returns>
-		private static string GetRepoFileContentKey(RelativePath filePath)
-		{
-			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
-			return _entries[filePath].RepoKey;
 		}
 		
 		private static void SetStageFileContentKey(RelativePath filePath, string key)
