@@ -96,14 +96,22 @@ namespace GitSharp.Objects {
 		
 		public bool Checkout()
 		{
-			if (!CheckCheckoutPreconditions()) {
-				return false;
-			}
-		}
+			Directory.SetCurrentDirectory(DirName);
 
-		private bool CheckCheckoutPreconditions()
-		{
+			foreach (BlobEntry blobEntry in _blobs.Values) {
+				if (!blobEntry.LoadBlob().Checkout()) {
+					return false;
+				}
+			}
+
+			foreach (TreeEntry treeEntry in _subTrees.Values) {
+				if (!treeEntry.LoadTree().Checkout()) {
+					return false;
+				}
+			}
 			
+			Directory.SetCurrentDirectory("..");
+			return true;
 		}
 
 		public void LoadAndGetAllBlobs(List<Blob> blobs)
