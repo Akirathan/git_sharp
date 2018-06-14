@@ -23,7 +23,7 @@ namespace GitSharp.Reference {
 		public Branch(string name, HashKey commitKey)
 		{
 			Name = name;
-			IsModified = false;
+			IsModified = true;
 			_commitKey = commitKey;
 		}
 
