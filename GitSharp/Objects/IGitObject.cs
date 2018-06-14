@@ -6,6 +6,10 @@ namespace GitSharp.Objects {
 	/// </summary>
 	internal interface IGitObject {
 		HashKey GetChecksum();
+		/// <summary>
+		/// Standard checkout as described in "git checkout branch"
+		/// </summary>
+		/// <returns>false if checkout preconditions were not met.</returns>
 		bool Checkout();
 	}
 }
