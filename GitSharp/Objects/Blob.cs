@@ -65,6 +65,11 @@ namespace GitSharp.Objects {
 			return _checksum;
 		}
 
+		public bool Checkout()
+		{
+			
+		}
+
 		public bool Equals(Blob other)
 		{
 			if (other == null) return false;

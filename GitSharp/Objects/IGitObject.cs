@@ -6,5 +6,6 @@ namespace GitSharp.Objects {
 	/// </summary>
 	internal interface IGitObject {
 		HashKey GetChecksum();
+		bool Checkout();
 	}
 }

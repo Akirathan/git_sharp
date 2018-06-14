@@ -94,7 +94,14 @@ namespace GitSharp.Objects {
 			return _checksum;
 		}
 		
-		public void Checkout()
+		public bool Checkout()
+		{
+			if (!CheckCheckoutPreconditions()) {
+				return false;
+			}
+		}
+
+		private bool CheckCheckoutPreconditions()
 		{
 			
 		}

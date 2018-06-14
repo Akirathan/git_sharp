@@ -65,6 +65,11 @@ namespace GitSharp.Objects {
 			return _checksum;
 		}
 
+		public bool Checkout()
+		{
+			return LoadTree().Checkout();
+		}
+
 		public Tree LoadTree()
 		{
 			if (_tree == null) {
