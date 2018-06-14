@@ -8,6 +8,7 @@ namespace GitSharp {
 		private const string AddCommandName = "add";
 		private const string CommitCommandName = "commit";
 		private const string LogCommandName = "log";
+		private const string BranchCommandName = "branch";
 		
 		public static Command ParseCommand(string[] args)
 		{
@@ -25,16 +26,26 @@ namespace GitSharp {
 				return new LogCommand();
 			}
 			if (args[0] == AddCommandName) {
-				string[] restOfArgs = new string[args.Length - 1];
-				Array.Copy(args, 1, restOfArgs, 0, restOfArgs.Length);
-				return new AddCommand(restOfArgs);
+				return new AddCommand(CutOutFirstArgument(args));
 			}
 			if (args[0] == CommitCommandName) {
-				string[] restOfArgs = new string[args.Length - 1];
-				Array.Copy(args, 1, restOfArgs, 0, restOfArgs.Length);
-				return new CommitCommand(restOfArgs);
+				return new CommitCommand(CutOutFirstArgument(args));
+			}
+			if (args[0] == BranchCommandName) {
+				return new BranchCommand(CutOutFirstArgument(args));
 			}
 			return null;
+		}
+
+		private static string[] CutOutFirstArgument(string[] args)
+		{
+			string[] restOfArgs = new string[args.Length - 1];
+			
+			Array.Copy(sourceArray: args, sourceIndex: 1,
+				destinationArray: restOfArgs, destinationIndex: 0,
+				length: restOfArgs.Length);
+			
+			return restOfArgs;
 		}
 	}
 }
