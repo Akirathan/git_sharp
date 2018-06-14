@@ -71,9 +71,10 @@ namespace GitSharp.Objects {
 			if (!CheckCheckoutPreconditions()) {
 				return false;
 			}
-			
-			RelativePath filePath = new RelativePath(FilePath);
-			
+
+			using (StreamWriter writer = new StreamWriter(FileName)) {
+				writer.Write(FileContent);
+			}
 
 			return true;
 		}
