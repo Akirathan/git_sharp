@@ -134,15 +134,15 @@ namespace GitSharp {
 				return File.StatusType.Untracked;
 			}
 
+			if (IsDeletedInWdir(filePath)) {
+				return File.StatusType.Deleted;
+			}
             if (IsCommited(filePath)) {
                 return File.StatusType.Commited;
             }
             if (IsStaged(filePath)) {
                 return File.StatusType.Staged;
             }
-			if (IsDeletedInWdir(filePath)) {
-				return File.StatusType.Deleted;
-			}
 			if (IsModified(filePath)) {
 				return File.StatusType.Modified;
 			}
