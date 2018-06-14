@@ -65,6 +65,10 @@ namespace GitSharp.Objects {
 			return _checksum;
 		}
 
+		/// <summary>
+		/// Standard checkout as described in "git checkout branch"
+		/// </summary>
+		/// <returns>false if checkout preconditions were not met.</returns>
 		public bool Checkout()
 		{
 			return LoadTree().Checkout();
