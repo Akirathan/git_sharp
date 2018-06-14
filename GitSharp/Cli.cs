@@ -9,6 +9,7 @@ namespace GitSharp {
 		private const string CommitCommandName = "commit";
 		private const string LogCommandName = "log";
 		private const string BranchCommandName = "branch";
+		private const string CheckoutCommandName = "checkout";
 		
 		public static Command ParseCommand(string[] args)
 		{
@@ -33,6 +34,9 @@ namespace GitSharp {
 			}
 			if (args[0] == BranchCommandName) {
 				return new BranchCommand(CutOutFirstArgument(args));
+			}
+			if (args[0] == CheckoutCommandName) {
+				return new CheckoutCommand(CutOutFirstArgument(args));
 			}
 			return null;
 		}
