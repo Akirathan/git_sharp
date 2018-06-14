@@ -19,13 +19,27 @@ namespace GitSharp.Objects {
 		public static Blob ParseFromString(string content)
 		{
 			StringReader reader = new StringReader(content);
-			string fileName = ParseFirstLine(reader.ReadLine());
-			if (fileName == null) {
+			string filePath = ParseFirstLine(reader.ReadLine());
+			if (filePath == null) {
 				return null;
 			}
-			return new Blob(new RelativePath(fileName));
+
+			Blob blob = new Blob();
+			blob.FilePath = filePath;
+			blob.FileName = GetFileNameFromFilePath(filePath);
+			blob.FileContent = reader.ReadToEnd();
+			blob._blobContent = blob.CreateBlobFileContent();
+			blob._checksum = ContentHasher.HashContent(blob._blobContent);
+			return blob;
+		}
+
+		private static string GetFileNameFromFilePath(string filePath)
+		{
+			string[] pathItems = filePath.Split(Path.DirectorySeparatorChar);
+			return pathItems[pathItems.Length - 1];
 		}
 		
+		/// Returns file path
 		private static string ParseFirstLine(string firstLine)
 		{
 			if (firstLine == null) {
@@ -48,13 +62,15 @@ namespace GitSharp.Objects {
 			_blobContent = CreateBlobFileContent();
 			_checksum = ContentHasher.HashContent(_blobContent);
 		}
+		
+		private Blob() {}
 
-		public string FileContent { get; }
+		public string FileContent { get; private set; }
 		
 		/// path to file that is relative to git root directory
-		public string FilePath { get; }
+		public string FilePath { get; private set; }
 		
-		public string FileName { get; }
+		public string FileName { get; private set; }
 
 		public string GetGitObjectFileContent()
 		{
