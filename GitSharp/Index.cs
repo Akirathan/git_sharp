@@ -75,6 +75,24 @@ namespace GitSharp {
 			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
 			return _entries[filePath].RepoKey;
 		}
+		
+		public static void SetStageFileContentKey(RelativePath filePath, string key)
+		{
+			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
+			_entries[filePath].StageKey = key;
+		}
+		
+		public static void SetRepoFileContentKey(RelativePath filePath, string key)
+		{
+			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
+			_entries[filePath].RepoKey = key;
+		}
+		
+		public static void SetWdirFileContentKey(RelativePath filePath, string key)
+		{
+			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
+			_entries[filePath].WdirKey = key;
+		}
 
 		/// <summary>
 		/// Returns all the files that are in the index ie. all tracked files.
@@ -265,24 +283,6 @@ namespace GitSharp {
 			return wdirContentKey;
 		}
 		
-		private static void SetStageFileContentKey(RelativePath filePath, string key)
-		{
-			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
-			_entries[filePath].StageKey = key;
-		}
-		
-		private static void SetRepoFileContentKey(RelativePath filePath, string key)
-		{
-			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
-			_entries[filePath].RepoKey = key;
-		}
-		
-		private static void SetWdirFileContentKey(RelativePath filePath, string key)
-		{
-			Debug.Assert(_entries.ContainsKey(filePath), "file has to be in index");
-			_entries[filePath].WdirKey = key;
-		}
-
 		private class Entry {
 			public const string KeyNullValue = "0";
 			
