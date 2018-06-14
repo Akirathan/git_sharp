@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using GitSharp.Hash;
+using GitSharp.Reference;
 
 namespace GitSharp.Objects {
 	/// <summary>
@@ -71,7 +72,18 @@ namespace GitSharp.Objects {
 		/// <returns>false if checkout preconditions were not met.</returns>
 		public bool Checkout()
 		{
+			if (IsHeadCommit()) {
+				return true;
+			}
+			
 			return LoadTree().Checkout();
+		}
+
+		// Return true if this Commit is in the HEAD.
+		private bool IsHeadCommit()
+		{
+			HashKey headCommitKey = ReferenceDatabase.GetHead().GetCommitKey();
+			return headCommitKey.Equals(_checksum);
 		}
 
 		public Tree LoadTree()
