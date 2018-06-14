@@ -14,6 +14,10 @@ namespace GitSharp.Commands {
 		
 		public override void Process()
 		{
+			if (!ProcessArgs()) {
+				return;
+			}
+			
 			HashKey currentCommitKey = ReferenceDatabase.GetHead().GetCommitKey();
 			Branch branch = ReferenceDatabase.CreateBranch(_branchName, currentCommitKey);
 			ReferenceDatabase.SetHead(branch);
@@ -34,6 +38,7 @@ namespace GitSharp.Commands {
 		private bool ProcessArgs()
 		{
 			if (_args.Length != 1) {
+				PrintHelp();
 				return false;
 			}
 			_branchName = _args[0];
