@@ -54,6 +54,28 @@ namespace Test {
 			Assert.Equal(blobA.FileContent, "other content");
 			
 		}
+
+		[Fact]
+		public void CommitRemovedFile()
+		{
+			Init();
+			
+			CreateFile("a.txt", "a content");
+			Program.Main(new string[]{"add", "a.txt"});
+			Program.Main(new string[]{"commit", "First commit"});
+			
+			System.IO.File.Delete("a.txt");
+			Program.Main(new string[]{"add", "a.txt"});
+			Program.Main(new string[]{"commit", "Second commit"});
+			
+			RelativePath aFilePath = new RelativePath("a.txt");
+			Assert.False(Index.ContainsFile(aFilePath));
+			
+			Branch headBranch = ReferenceDatabase.GetHead();
+			Commit commit = headBranch.LoadCommit();
+			Tree tree = commit.LoadTree();
+			Assert.Null(tree.FindAndLoadBlob("a.txt"));
+		}
 		
 		private void Init()
 		{
