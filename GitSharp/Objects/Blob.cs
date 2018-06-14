@@ -91,8 +91,20 @@ namespace GitSharp.Objects {
 			using (StreamWriter writer = new StreamWriter(FileName)) {
 				writer.Write(FileContent);
 			}
-
+			UpdateIndexAfterCheckout();
 			return true;
+		}
+
+		private void UpdateIndexAfterCheckout()
+		{
+			RelativePath filePath = new RelativePath(FilePath);
+			
+			// Do not overwrite local modifications
+			if (!Index.IsModified(filePath)) {
+				Index.SetWdirFileContentKey(filePath, _checksum.ToString());
+			}
+			Index.SetStageFileContentKey(filePath, _checksum.ToString());
+			Index.SetRepoFileContentKey(filePath, _checksum.ToString());
 		}
 
 		private bool CheckCheckoutPreconditions()
