@@ -31,7 +31,7 @@ namespace GitSharp.Commands {
 
 		private void PrintSuccess()
 		{
-			Console.WriteLine($"Switched to branch '{_branchName}'");
+			Console.WriteLine($"Created branch '{_branchName}'");
 		}
 
 		private bool ProcessArgs()
