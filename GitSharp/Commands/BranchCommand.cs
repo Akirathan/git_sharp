@@ -19,8 +19,7 @@ namespace GitSharp.Commands {
 			}
 			
 			HashKey currentCommitKey = ReferenceDatabase.GetHead().GetCommitKey();
-			Branch branch = ReferenceDatabase.CreateBranch(_branchName, currentCommitKey);
-			ReferenceDatabase.SetHead(branch);
+			ReferenceDatabase.CreateBranch(_branchName, currentCommitKey);
 			
 			PrintSuccess();
 		}
