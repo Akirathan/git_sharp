@@ -171,6 +171,16 @@ namespace GitSharp {
 		}
 
 		/// <summary>
+		/// Stops tracking the file.
+		/// </summary>
+		/// <param name="filePath"></param>
+		public static void RemoveFile(RelativePath filePath)
+		{
+			Debug.Assert(_entries.ContainsKey(filePath));
+			_entries.Remove(filePath);
+		}
+
+		/// <summary>
 		/// Adds given file into the Index ie. starts tracking this file.
 		/// </summary>
 		/// <param name="fileName"></param>

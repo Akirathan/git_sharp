@@ -36,12 +36,19 @@ namespace GitSharp.Commands {
 			StoreCommitAndAdvanceHeadBranch(commit, treeBuilder);
 		}
 
+		/// Beware of deleted files - do not load blobs for them
 		private void AddAllStagedFilesToTree(TreeBuilder treeBuilder, List<string> stagedFiles)
 		{
 			foreach (string stagedFile in stagedFiles) {
+				RelativePath stagedFilePath = new RelativePath(stagedFile);
+				
+				if (Index.ResolveFileStatus(stagedFilePath) == File.StatusType.Deleted) {
+					Index.RemoveFile(stagedFilePath);
+					continue;
+				}
 				Blob blob = GetStagedFileBlob(stagedFile);
 				treeBuilder.AddBlobToTreeHierarchy(blob);
-				Index.CommitFile(new RelativePath(stagedFile));
+				Index.CommitFile(stagedFilePath);
 			}
 		}
 		
