@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using GitSharp.Hash;
+using GitSharp.Reference;
 
 namespace GitSharp.Objects {
 	/// <summary>
@@ -67,7 +68,29 @@ namespace GitSharp.Objects {
 
 		public bool Checkout()
 		{
+			if (!CheckCheckoutPreconditions()) {
+				return false;
+			}
 			
+			RelativePath filePath = new RelativePath(FilePath);
+			
+
+			return true;
+		}
+
+		private bool CheckCheckoutPreconditions()
+		{
+			if (!Index.IsModified(new RelativePath(FilePath))) {
+				return true;
+			}
+
+			return CheckIfIndexDiffersFromHead();
+		}
+		
+		private bool CheckIfIndexDiffersFromHead()
+		{
+			string headRepoFileContentKey = Index.GetStageFileContentKey(new RelativePath(FilePath));
+			return GetChecksum().ToString() == headRepoFileContentKey;
 		}
 
 		public bool Equals(Blob other)
