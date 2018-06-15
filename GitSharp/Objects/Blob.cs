@@ -98,28 +98,28 @@ namespace GitSharp.Objects {
 		private void UpdateIndexAfterCheckout()
 		{
 			RelativePath filePath = new RelativePath(FilePath);
-			
-			// Do not overwrite local modifications
-			if (!Index.IsModified(filePath)) {
-				Index.SetWdirFileContentKey(filePath, _checksum.ToString());
+
+			if (!Index.ContainsFile(filePath)) {
+				Index.StartTrackingFile(filePath);
 			}
+            Index.SetWdirFileContentKey(filePath, _checksum.ToString());
 			Index.SetStageFileContentKey(filePath, _checksum.ToString());
 			Index.SetRepoFileContentKey(filePath, _checksum.ToString());
 		}
 
 		private bool CheckCheckoutPreconditions()
 		{
-			if (!Index.IsModified(new RelativePath(FilePath))) {
-				return true;
+			RelativePath filePath = new RelativePath(FilePath);
+			
+			if (Index.ContainsFile(filePath)) {
+				if (Index.IsStaged(filePath) || Index.IsModified(filePath)) {
+					return false;
+				}
+				else if (Index.IsCommited(filePath)) {
+					return true;
+				}
 			}
-
-			return CheckIfIndexDiffersFromHead();
-		}
-		
-		private bool CheckIfIndexDiffersFromHead()
-		{
-			string headRepoFileContentKey = Index.GetStageFileContentKey(new RelativePath(FilePath));
-			return GetChecksum().ToString() == headRepoFileContentKey;
+			return true;
 		}
 
 		public bool Equals(Blob other)
