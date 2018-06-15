@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using GitSharp.Hash;
@@ -75,8 +76,52 @@ namespace GitSharp.Objects {
 			if (IsHeadCommit()) {
 				return true;
 			}
+
+			Tree tree = LoadTree();
+			if (!tree.Checkout()) {
+				return false;
+			}
+
+			ProcessRestOfIndexFilesAfterCheckout();
+			return true;
+		}
+
+		private void ProcessRestOfIndexFilesAfterCheckout()
+		{
+			ISet<string> onlyIndexFiles = GetRestOfIndexFiles();
+			foreach (string indexFile in onlyIndexFiles) {
+				RelativePath indexFilePath = new RelativePath(indexFile);
+
+				if (Index.IsCommited(indexFilePath)) {
+					Index.RemoveFile(indexFilePath);
+					System.IO.File.Delete(indexFilePath.GetAbsolutePath());
+				}
+				else if (Index.IsStaged(indexFilePath)) {
+					Index.SetRepoFileContentKey(indexFilePath, "0");
+				}
+				else if (Index.IsModified(indexFilePath)) {
+					Index.SetStageFileContentKey(indexFilePath, "0");
+					Index.SetRepoFileContentKey(indexFilePath, "0");
+				}
+			}
+		}
+
+		/// Returns all the files that are remaining in the Index and were not
+		/// part of the (checkout) tree.
+		private ISet<string> GetRestOfIndexFiles()
+		{
+			Tree tree = LoadTree();
 			
-			return LoadTree().Checkout();
+			List<Blob> blobs = new List<Blob>();
+			tree.LoadAndGetAllBlobs(blobs);
+			List<string> treeFiles = new List<string>();
+			foreach (Blob blob in blobs) {
+				treeFiles.Add(blob.FilePath);
+			}
+
+			ISet<string> onlyIndexFiles = new HashSet<string>(Index.GetAllTrackedFiles());
+			onlyIndexFiles.ExceptWith(treeFiles);
+			return onlyIndexFiles;
 		}
 
 		// Return true if this Commit is in the HEAD.
