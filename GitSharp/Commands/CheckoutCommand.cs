@@ -17,6 +17,8 @@ namespace GitSharp.Commands {
 				return;
 			}
 
+			Index.Update();
+
 			if (!_branch.LoadCommit().Checkout()) {
 				PrintError();
 				return;
