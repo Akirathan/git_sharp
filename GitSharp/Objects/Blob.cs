@@ -72,6 +72,13 @@ namespace GitSharp.Objects {
 		
 		public string FileName { get; private set; }
 
+		public bool Equals(Blob other)
+		{
+			if (other == null) return false;
+			if (this == other) return true;
+			return string.Equals(FileContent, other.FileContent);
+		}
+
 		public string GetGitObjectFileContent()
 		{
 			return _blobContent;
@@ -120,13 +127,6 @@ namespace GitSharp.Objects {
 				}
 			}
 			return true;
-		}
-
-		public bool Equals(Blob other)
-		{
-			if (other == null) return false;
-			if (this == other) return true;
-			return string.Equals(FileContent, other.FileContent);
 		}
 
 		private string CreateBlobFileContent()
