@@ -6,8 +6,11 @@ using System.Text;
 namespace GitSharp.Hash {
 	/// <summary>
 	/// Wrapper for SHA-1 hash.
-	/// It is used as a key to ObjectDatabase.
+	/// It is used as a key for addressing objects in <see cref="ObjectDatabase"/>.
 	/// </summary>
+	/// For generating HashKeys, call <see cref="ContentHasher.HashContent"/>
+	/// Note that it can be wrapper for other hash types than SHA-1.
+	/// This depends on which hashing algorithm is <see cref="ContentHasher"/> using.
 	public class HashKey : IEquatable<string>, IEquatable<HashKey> {
 		private byte[] content;
 

@@ -2,6 +2,9 @@
 using GitSharp.Commands;
 
 namespace GitSharp {
+	/// <summary>
+	/// Represents command line input parser.
+	/// </summary>
 	internal static class Cli {
 		private const string InitCommandName = "init";
 		private const string StatusCommandName = "status";
