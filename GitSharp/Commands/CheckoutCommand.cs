@@ -2,6 +2,9 @@
 using GitSharp.Reference;
 
 namespace GitSharp.Commands {
+	/// <summary>
+	/// Represents "git checkout [branch_name]" command with no options.
+	/// </summary>
 	internal class CheckoutCommand : Command {
 		private string[] _args;
 		private Branch _branch;

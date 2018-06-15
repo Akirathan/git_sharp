@@ -2,22 +2,20 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using GitSharp.Commands;
 using GitSharp.Hash;
 
 namespace GitSharp.Objects {
 	/// <summary>
 	/// Represents a builder class for tree git object.
 	/// </summary>
-	/// First use AddBlobToTreeHierarchy method to add all blobs into the tree (building phase).
+	/// First, use <see cref="AddBlobToTreeHierarchy"/>method to add all blobs
+	/// into the tree.
 	/// Once you are done with adding blobs into this TreeBuilder, you can call
-	/// GetGitObjectFileContent or GetChecksum.
+	/// <see cref="GetGitObjectFileContent"/> or <see cref="GetChecksum"/>.
 	/// 
-	/// Building a tree object is useful mainly for creating new commit object ie.
-	/// in CommitCommand.
-	/// 
-	/// Is not immutable like Tree.
-	/// Particular useful for creating tree objects
-	/// TODO: add dirName
+	/// Building a tree object is useful mainly for creating new commit object
+	/// (see <see cref="CommitCommand"/>).
 	internal class TreeBuilder : IStorableGitObject {
 		private IDictionary<string, Blob> _blobs = new Dictionary<string, Blob>();
 		private IDictionary<string, TreeBuilder> _subTrees = new Dictionary<string, TreeBuilder>();

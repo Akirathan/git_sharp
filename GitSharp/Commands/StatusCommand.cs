@@ -30,20 +30,20 @@ namespace GitSharp.Commands {
 			foreach (string file in allFiles) {
 				
 				switch (Index.ResolveFileStatus(new RelativePath(file))) {
-					case File.StatusType.Untracked:
+					case FileStatus.Untracked:
 						untrackedFiles.Add(file);
 						break;
-					case File.StatusType.Modified:
+					case FileStatus.Modified:
 						modifiedFiles.Add(file);
 						break;
-					case File.StatusType.Staged:
+					case FileStatus.Staged:
 						stagedFiles.Add(file);
 						break;
-                    case File.StatusType.Deleted:
+                    case FileStatus.Deleted:
 						deletedFiles.Add(file);
 	                    break;
-					case File.StatusType.Commited:
-					case File.StatusType.Ignored:
+					case FileStatus.Commited:
+					case FileStatus.Ignored:
 						break;
 					default:
 						throw new ArgumentOutOfRangeException();

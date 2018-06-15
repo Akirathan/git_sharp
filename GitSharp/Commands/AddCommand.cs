@@ -5,6 +5,11 @@ using GitSharp.Hash;
 using GitSharp.Objects;
 
 namespace GitSharp.Commands {
+	/// <summary>
+	/// Represents "git add [file|directory]" command .
+	/// </summary>
+	/// It is also possible to add (ie. add to stage) files that were deleted
+	/// from working directory.
 	internal class AddCommand : Command {
 		private string[] _args;
 		private IList<RelativePath> _encounteredIgnoredFiles = new List<RelativePath>();
@@ -135,7 +140,6 @@ namespace GitSharp.Commands {
 			return Index.ContainsFile(new RelativePath(fileName)) && !System.IO.File.Exists(fileName);
 		}
 
-		/// Supposes that fileName is existing file
 		private void AddFile(RelativePath filePath)
 		{
 			if (!Index.ContainsFile(filePath)) {
@@ -143,21 +147,21 @@ namespace GitSharp.Commands {
 			}
 			
 			Index.UpdateFileInWdir(filePath);
-			File.StatusType fileStatus = Index.ResolveFileStatus(filePath);
+			FileStatus fileFileStatus = Index.ResolveFileStatus(filePath);
 			
-			switch (fileStatus) {
-				case File.StatusType.Untracked:
-				case File.StatusType.Modified:
+			switch (fileFileStatus) {
+				case FileStatus.Untracked:
+				case FileStatus.Modified:
 					CreateAndStoreBlob(filePath);
 					Index.StageFile(filePath);
 					break;
-				case File.StatusType.Staged:
-				case File.StatusType.Commited:
+				case FileStatus.Staged:
+				case FileStatus.Commited:
 					break;
-                case File.StatusType.Deleted:
+                case FileStatus.Deleted:
 	                Index.StageFile(filePath);
                     break;
-				case File.StatusType.Ignored:
+				case FileStatus.Ignored:
 					_encounteredIgnoredFiles.Add(filePath);
 					break;
 				default:

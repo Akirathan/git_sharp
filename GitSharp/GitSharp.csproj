@@ -50,11 +50,9 @@
     <Compile Include="Commands\InitCommand.cs" />
     <Compile Include="Commands\LogCommand.cs" />
     <Compile Include="Commands\StatusCommand.cs" />
-    <Compile Include="Compressor.cs" />
-    <Compile Include="File.cs" />
+    <Compile Include="FileStatus.cs" />
     <Compile Include="Hash\ContentHasher.cs" />
     <Compile Include="Hash\HashKey.cs" />
-    <Compile Include="IndexFileOperations.cs" />
     <Compile Include="Index.cs" />
     <Compile Include="ObjectDatabase.cs" />
     <Compile Include="Objects\Blob.cs" />
@@ -69,6 +67,11 @@
     <Compile Include="Reference\ReferenceDatabase.cs" />
     <Compile Include="RelativePath.cs" />
     <Compile Include="Traverser.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\README.md">
+      <Link>README.md</Link>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

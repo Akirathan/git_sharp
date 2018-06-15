@@ -17,7 +17,7 @@ namespace Test {
 		}
 		
 		[Fact]
-		public void SimpleTest()
+		public void SimpleStoreRetrieveTest()
 		{
 			CreateFile("a.txt", "a content");
 			Blob blob = new Blob(new RelativePath("a.txt"));

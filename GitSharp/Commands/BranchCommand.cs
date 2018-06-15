@@ -3,6 +3,12 @@ using GitSharp.Hash;
 using GitSharp.Reference;
 
 namespace GitSharp.Commands {
+	/// <summary>
+	/// Represents "git branch [branch_name]" command.
+	/// </summary>
+	/// Currently supports just creating of new branches.
+	/// 
+	/// TODO: Does not check whether given branch_name exists.
 	internal class BranchCommand : Command {
 		private string _branchName;
 		private string[] _args;

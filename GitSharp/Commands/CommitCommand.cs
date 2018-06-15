@@ -6,6 +6,10 @@ using GitSharp.Objects;
 using GitSharp.Reference;
 
 namespace GitSharp.Commands {
+	/// <summary>
+	/// Represnts "git commit -m message" command.
+	/// </summary>
+	/// Except you have to call this command without -m option.
 	internal class CommitCommand : Command {
 		private string[] _args;
 		private string _message;
@@ -42,7 +46,7 @@ namespace GitSharp.Commands {
 			foreach (string stagedFile in stagedFiles) {
 				RelativePath stagedFilePath = new RelativePath(stagedFile);
 				
-				if (Index.ResolveFileStatus(stagedFilePath) == File.StatusType.Deleted) {
+				if (Index.ResolveFileStatus(stagedFilePath) == FileStatus.Deleted) {
 					Index.RemoveFile(stagedFilePath);
 					continue;
 				}

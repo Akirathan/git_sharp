@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using GitSharp.Commands;
+using GitSharp.Hash;
 using GitSharp.Objects;
 
 namespace GitSharp {
 	/// <summary>
 	/// Index represents a database that contains (tracked) files as rows and their corresponding
 	/// working directory version, stage area version and repository version as columns.
-	/// Versions of files are saved as HashKeys ie. references to Blob objects.
+	/// Versions of files are saved as <see cref="HashKey"/> ie. references to Blob objects.
 	/// 
 	/// Some of the columns may be null ie. 0 (for example when a file was never commited)
 	/// 
@@ -146,26 +146,26 @@ namespace GitSharp {
 		/// </summary>
 		/// <param name="fileName"></param>
 		/// <returns></returns>
-		public static File.StatusType ResolveFileStatus(RelativePath filePath)
+		public static FileStatus ResolveFileStatus(RelativePath filePath)
 		{
 			if (!ContainsFile(filePath)) {
-				return File.StatusType.Untracked;
+				return FileStatus.Untracked;
 			}
 
 			if (IsDeletedInWdir(filePath)) {
-				return File.StatusType.Deleted;
+				return FileStatus.Deleted;
 			}
             if (IsCommited(filePath)) {
-                return File.StatusType.Commited;
+                return FileStatus.Commited;
             }
             if (IsStaged(filePath)) {
-                return File.StatusType.Staged;
+                return FileStatus.Staged;
             }
 			if (IsModified(filePath)) {
-				return File.StatusType.Modified;
+				return FileStatus.Modified;
 			}
 			
-			return File.StatusType.Ignored;
+			return FileStatus.Ignored;
 		}
 
 		/// <summary>

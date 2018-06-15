@@ -6,6 +6,12 @@ using System.Text;
 using GitSharp.Hash;
 
 namespace GitSharp.Objects {
+	/// <summary>
+	/// Represents immutable tree git object that is retrieved from <see cref="ObjectDatabase"/>.
+	/// </summary>
+	/// Subobjects ie. subtrees and blobs may be loaded via <see cref="FindAndLoadBlob(string)"/>
+	/// and <see cref="FindAndLoadSubTree(string)"/> methods.
+	/// Note that the FindAndLoad methods are implemented with recursion.
 	internal class Tree : IGitObject {
 		public const string TreeFileType = "tree";
 		private readonly IDictionary<string, TreeEntry> _subTrees = new Dictionary<string, TreeEntry>();
@@ -17,7 +23,7 @@ namespace GitSharp.Objects {
 		/// of a file.
 		/// </summary>
 		/// <param name="content"></param>
-		/// <returns>null if parsing fails</returns>
+		/// <returns> null if parsing fails </returns>
 		public static Tree ParseFromString(string content)
 		{
 			StringReader reader = new StringReader(content);
@@ -118,6 +124,10 @@ namespace GitSharp.Objects {
 			return true;
 		}
 
+		/// <summary>
+		/// Loads and gets all the blobs that are contained in this tree and its subtrees.
+		/// </summary>
+		/// <param name="blobs"> this list will be filled with blobs </param>
 		public void LoadAndGetAllBlobs(List<Blob> blobs)
 		{
 			// Load all blobs
@@ -132,7 +142,7 @@ namespace GitSharp.Objects {
 		}
 		
 		/// <summary>
-		/// 
+		/// Find and loads a subtree.
 		/// </summary>
 		/// <param name="dirPath"></param>
 		/// <returns>
