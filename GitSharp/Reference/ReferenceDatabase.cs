@@ -70,13 +70,27 @@ namespace GitSharp.Reference {
 			_head = branch;
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="branchName"></param>
+		/// <returns>null when no such branch exists</returns>
 		public static Branch GetBranch(string branchName)
 		{
+			if (!BranchExists(branchName)) {
+				return null;
+			}
+			
 			if (!_trackedBranches.ContainsKey(branchName)) {
 				Branch branch = ReadBranchFromFile(branchName);
 				_trackedBranches.Add(branchName, branch);
 			}
 			return _trackedBranches[branchName];
+		}
+
+		private static bool BranchExists(string branchName)
+		{
+			return System.IO.File.Exists(BranchDirPath + Path.DirectorySeparatorChar + branchName);
 		}
 
 		public static IEnumerable<Branch> GetAllBranches()

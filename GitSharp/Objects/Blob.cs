@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using GitSharp.Hash;
+using GitSharp.Reference;
 
 namespace GitSharp.Objects {
 	/// <summary>
@@ -18,13 +19,27 @@ namespace GitSharp.Objects {
 		public static Blob ParseFromString(string content)
 		{
 			StringReader reader = new StringReader(content);
-			string fileName = ParseFirstLine(reader.ReadLine());
-			if (fileName == null) {
+			string filePath = ParseFirstLine(reader.ReadLine());
+			if (filePath == null) {
 				return null;
 			}
-			return new Blob(new RelativePath(fileName));
+
+			Blob blob = new Blob();
+			blob.FilePath = filePath;
+			blob.FileName = GetFileNameFromFilePath(filePath);
+			blob.FileContent = reader.ReadToEnd();
+			blob._blobContent = blob.CreateBlobFileContent();
+			blob._checksum = ContentHasher.HashContent(blob._blobContent);
+			return blob;
+		}
+
+		private static string GetFileNameFromFilePath(string filePath)
+		{
+			string[] pathItems = filePath.Split(Path.DirectorySeparatorChar);
+			return pathItems[pathItems.Length - 1];
 		}
 		
+		/// Returns file path
 		private static string ParseFirstLine(string firstLine)
 		{
 			if (firstLine == null) {
@@ -47,13 +62,22 @@ namespace GitSharp.Objects {
 			_blobContent = CreateBlobFileContent();
 			_checksum = ContentHasher.HashContent(_blobContent);
 		}
+		
+		private Blob() {}
 
-		public string FileContent { get; }
+		public string FileContent { get; private set; }
 		
 		/// path to file that is relative to git root directory
-		public string FilePath { get; }
+		public string FilePath { get; private set; }
 		
-		public string FileName { get; }
+		public string FileName { get; private set; }
+
+		public bool Equals(Blob other)
+		{
+			if (other == null) return false;
+			if (this == other) return true;
+			return string.Equals(FileContent, other.FileContent);
+		}
 
 		public string GetGitObjectFileContent()
 		{
@@ -65,11 +89,44 @@ namespace GitSharp.Objects {
 			return _checksum;
 		}
 
-		public bool Equals(Blob other)
+		public bool Checkout()
 		{
-			if (other == null) return false;
-			if (this == other) return true;
-			return string.Equals(FileContent, other.FileContent);
+			if (!CheckCheckoutPreconditions()) {
+				return false;
+			}
+
+			using (StreamWriter writer = new StreamWriter(FileName)) {
+				writer.Write(FileContent);
+			}
+			UpdateIndexAfterCheckout();
+			return true;
+		}
+
+		private void UpdateIndexAfterCheckout()
+		{
+			RelativePath filePath = new RelativePath(FilePath);
+
+			if (!Index.ContainsFile(filePath)) {
+				Index.StartTrackingFile(filePath);
+			}
+            Index.SetWdirFileContentKey(filePath, _checksum.ToString());
+			Index.SetStageFileContentKey(filePath, _checksum.ToString());
+			Index.SetRepoFileContentKey(filePath, _checksum.ToString());
+		}
+
+		private bool CheckCheckoutPreconditions()
+		{
+			RelativePath filePath = new RelativePath(FilePath);
+			
+			if (Index.ContainsFile(filePath)) {
+				if (Index.IsStaged(filePath) || Index.IsModified(filePath)) {
+					return false;
+				}
+				else if (Index.IsCommited(filePath)) {
+					return true;
+				}
+			}
+			return true;
 		}
 
 		private string CreateBlobFileContent()

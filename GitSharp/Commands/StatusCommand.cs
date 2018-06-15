@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GitSharp.Hash;
 using GitSharp.Objects;
+using GitSharp.Reference;
 
 namespace GitSharp.Commands {
 	internal class StatusCommand : Command {
@@ -48,10 +49,16 @@ namespace GitSharp.Commands {
 						throw new ArgumentOutOfRangeException();
 				}
 			}
-			
+
+			PrintCurrentBranch();
 			PrintModifiedAndDeletedFiles(modifiedFiles, deletedFiles);
 			PrintStagedFiles(stagedFiles);
 			PrintUntrackedFiles(untrackedFiles);
+		}
+
+		private void PrintCurrentBranch()
+		{
+			Console.WriteLine($"On branch {ReferenceDatabase.GetHead().Name}");
 		}
 		
 		private void PrintModifiedAndDeletedFiles(IList<string> modifiedFiles, IList<string> deletedFiles)

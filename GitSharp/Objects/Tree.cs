@@ -94,9 +94,28 @@ namespace GitSharp.Objects {
 			return _checksum;
 		}
 		
-		public void Checkout()
+		public bool Checkout()
 		{
-			
+			if (!IsRootTree()) {
+                Directory.SetCurrentDirectory(DirName);
+			}
+
+			foreach (BlobEntry blobEntry in _blobs.Values) {
+				if (!blobEntry.LoadBlob().Checkout()) {
+					return false;
+				}
+			}
+
+			foreach (TreeEntry treeEntry in _subTrees.Values) {
+				if (!treeEntry.LoadTree().Checkout()) {
+					return false;
+				}
+			}
+
+			if (!IsRootTree()) {
+                Directory.SetCurrentDirectory("..");
+			}
+			return true;
 		}
 
 		public void LoadAndGetAllBlobs(List<Blob> blobs)
@@ -134,6 +153,11 @@ namespace GitSharp.Objects {
 		public Blob FindAndLoadBlob(string filePath)
 		{
 			return FindAndLoadBlob(GetAllDirParents(filePath), 0);
+		}
+
+		private bool IsRootTree()
+		{
+			return DirName == ".";
 		}
 
 		private void InitBlobs(IDictionary<string, HashKey> blobs)
