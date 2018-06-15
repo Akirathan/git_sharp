@@ -7,15 +7,23 @@ using GitSharp.Reference;
 namespace GitSharp.Objects {
 	/// <summary>
 	/// Represents file blob object.
-	/// File blob object contains file header and file content.
-	/// Checksum method gives key which is used for storing and retrieving this blob
-	/// object from ObjectDatabase.
 	/// </summary>
+	/// File blob object contains file name and file content.
+	/// 
+	/// Checksum is computed from both file content and file name (more precisely
+	/// file path).
+	/// Note that because of this, two same-named files with same content
+	/// on different paths are considered different.
 	internal class Blob : IStorableGitObject, IEquatable<Blob> {
 		private const string BlobFileType = "blob";
 		private string _blobContent;
 		private HashKey _checksum;
 
+		/// <summary>
+		/// This method is used for retrieving a blob object from <see cref="ObjectDatabase"/>.
+		/// </summary>
+		/// <param name="content"></param>
+		/// <returns></returns>
 		public static Blob ParseFromString(string content)
 		{
 			StringReader reader = new StringReader(content);
