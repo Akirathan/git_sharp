@@ -36,8 +36,9 @@ namespace GitSharp {
 		/// in the ObjectDatabase.
 		/// This is useful for creating commit objects.
 		/// </summary>
+		/// Note that it is supposed that all the blob objects are already stored.
 		/// <param name="commit"></param>
-		/// <returns>HashKey to commit</returns>
+		/// <returns> HashKey to commit </returns>
 		public static HashKey StoreCommitWithTreeHierarchy(Commit commit, TreeBuilder treeBuilder)
 		{
 			List<Blob> allBlobs = new List<Blob>();
@@ -99,14 +100,14 @@ namespace GitSharp {
 		
 		private static bool FileObjectExists(HashKey key)
 		{
-			return System.IO.File.Exists(DefaultPath + Path.DirectorySeparatorChar + key.ToString());
+			return File.Exists(DefaultPath + Path.DirectorySeparatorChar + key.ToString());
 		}
 
 		private static void WriteObjectContentToFile(string content, string fileName)
 		{
 			StreamWriter writer = null;
 			try {
-				FileStream fileStream = System.IO.File.Create(DefaultPath + Path.DirectorySeparatorChar + fileName);
+				FileStream fileStream = File.Create(DefaultPath + Path.DirectorySeparatorChar + fileName);
 				writer = new StreamWriter(fileStream);
 				writer.Write(content);
 			}
@@ -120,11 +121,7 @@ namespace GitSharp {
 			}
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="fileName"></param>
-		/// <returns>null if reading fails</returns>
+		/// Returns null if reading fails.
 		private static string ReadFileContent(string fileName)
 		{
 			string content;
@@ -133,7 +130,6 @@ namespace GitSharp {
 				content = reader.ReadToEnd();
 			}
 			catch (Exception) {
-				// TODO: log
 				return null;
 			}
 

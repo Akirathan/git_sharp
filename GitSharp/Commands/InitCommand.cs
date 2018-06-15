@@ -3,6 +3,11 @@ using System.IO;
 using GitSharp.Reference;
 
 namespace GitSharp.Commands {
+	/// <summary>
+	/// Represents "git init" command.
+	/// </summary>
+	/// Creates all the necessary files and directories.
+	/// Note that initializing already initialized repository is an error.
 	internal class InitCommand : Command {
 		public static bool IsInitializing { get; private set; }
 		
@@ -16,7 +21,7 @@ namespace GitSharp.Commands {
 			}
 			
 			CreateRootDir();
-			CreateAllFilesDirectories();
+			CreateAllFilesAndDirectories();
 			PrintRepoInitialized();
 			IsInitializing = false;
 		}
@@ -38,7 +43,7 @@ namespace GitSharp.Commands {
 			CreateDirectory(Traverser.GitRootDirName);
 		}
 		
-		private void CreateAllFilesDirectories()
+		private void CreateAllFilesAndDirectories()
 		{
 			CreateDirectory(ObjectDatabase.DefaultPath);
 			CreateFile(Index.IndexPath);
@@ -58,7 +63,7 @@ namespace GitSharp.Commands {
 		private void CreateFile(string fileName)
 		{
 			try {
-				System.IO.File.Create(fileName).Close();
+				File.Create(fileName).Close();
 			}
 			catch (Exception e) {
 				throw new Exception($"Cannot create file {fileName}", e);

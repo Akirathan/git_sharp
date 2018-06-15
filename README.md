@@ -53,7 +53,36 @@ Every git object is stored under a key (SHA-1 `Hash.HashKey`) and retrieved
 via that same key.
 Generation of that key is simple - SHA-1 is used on a file which is about to save.
 
+### Index
+Index is the most important data structure.
+It keeps track of every file in working directory.
+Note that the files that there may be untracked files in working directory that
+are not contained in index.
+Index is one file and static `Index` class reads the whole file when necessary and
+in the end of the program writes changes into this file.
+`Index` class contains all the methods that are necessary to manipulate the index,
+for more information see the documentation of the class.
+Note that the GitSharp index format is completely different than Git index format.
+
+### ReferenceDatabase
+`ReferenceDatabase` is a static class that keeps track of all the branches and HEAD.
+
+### Commands
+The core functionality of GitSharp is that the user input is parsed into a `Command` and
+its `Process` method is called.
+After `Process` method finishes, `Index` and `ReferenceDatabase` are disposed.
+Every currently supported command is in `Commands` namespace.
+Option parsing is responsibility of every command.
+
+
 ## Tests
+
+## Remarks
+Any configuration files are currently not supported.
+For visual and debugging reasons, object files are not compressed (as opposed to Git),
+and are human-readable.
+Any compressing algorithm may be added directly to `ObjectDatabase` and its
+`Retrieve` and `Store` methods.
 
 ## Usage
 Supported commands are subset of existing Git commands - for more information see Git documentation.

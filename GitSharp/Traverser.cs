@@ -2,7 +2,10 @@
 using System.IO;
 
 namespace GitSharp {
-	public static class Traverser {
+	/// <summary>
+	/// Represents working directory traverser.
+	/// </summary>
+	internal static class Traverser {
 		public const string GitRootDirName = ".git_sharp";
 		
 		private static string _rootDirPath;

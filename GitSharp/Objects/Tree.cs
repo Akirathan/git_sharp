@@ -11,6 +11,7 @@ namespace GitSharp.Objects {
 	/// </summary>
 	/// Subobjects ie. subtrees and blobs may be loaded via <see cref="FindAndLoadBlob(string)"/>
 	/// and <see cref="FindAndLoadSubTree(string)"/> methods.
+	/// Note that the FindAndLoad methods are implemented with recursion.
 	internal class Tree : IGitObject {
 		public const string TreeFileType = "tree";
 		private readonly IDictionary<string, TreeEntry> _subTrees = new Dictionary<string, TreeEntry>();

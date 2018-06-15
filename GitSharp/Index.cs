@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using GitSharp.Commands;
+using GitSharp.Hash;
 using GitSharp.Objects;
 
 namespace GitSharp {
 	/// <summary>
 	/// Index represents a database that contains (tracked) files as rows and their corresponding
 	/// working directory version, stage area version and repository version as columns.
-	/// Versions of files are saved as HashKeys ie. references to Blob objects.
+	/// Versions of files are saved as <see cref="HashKey"/> ie. references to Blob objects.
 	/// 
 	/// Some of the columns may be null ie. 0 (for example when a file was never commited)
 	/// 

@@ -4,6 +4,10 @@ using GitSharp.Objects;
 using GitSharp.Reference;
 
 namespace GitSharp.Commands {
+	/// <summary>
+	/// Represents "git log" command.
+	/// </summary>
+	/// Prints all the commits in current branch history
 	internal class LogCommand : Command {
 		public override void Process()
 		{
