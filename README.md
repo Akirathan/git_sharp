@@ -2,6 +2,7 @@
 Simplified multi-platform implementation of Git in C#.
 
 ## Build
+Theere is a solution file that may be build for example in Visual Studio.
 
 ## Architecture
 Is based on existing Git architecture.
@@ -42,7 +43,7 @@ the subobjects during construction, because there may be a lot of subobjects.
 
 #### Commit
 Commit represents a snapshot of the whole repository.
-In GitSharp implementation tt contains just root tree, parent commit and message.
+In GitSharp implementation it contains just root tree, parent commit and message.
 `Objects.Commit` represents a commit object and both root tree and parent commit
 may be loaded-on demand via `Load` methods (same principle as in `Objects.Tree`).
 
@@ -56,7 +57,7 @@ Generation of that key is simple - SHA-1 is used on a file which is about to sav
 ### Index
 Index is the most important data structure.
 It keeps track of every file in working directory.
-Note that the files that there may be untracked files in working directory that
+Note that there may be untracked files in working directory that
 are not contained in index.
 Index is one file and static `Index` class reads the whole file when necessary and
 in the end of the program writes changes into this file.
@@ -76,6 +77,12 @@ Option parsing is responsibility of every command.
 
 
 ## Tests
+There are some unit tests (XUnit) included in the repository.
+
+There is also a python script that tests some more complex inputs.
+The basic idea is that there are two directories - one for Git and one for GitSharp
+and same commands are done in parallel in those two directories and after every
+command, the directories are checked for equality.
 
 ## Remarks
 Any configuration files are currently not supported.
@@ -88,3 +95,31 @@ Any compressing algorithm may be added directly to `ObjectDatabase` and its
 Supported commands are subset of existing Git commands - for more information see Git documentation.
 
 `git_sharp init`
+- Creates all the necessary files and directories
+
+`git_sharp status`
+- Prints information about status of working directory,
+e. whether there are some modified files, or some untracked files and which files are staged.
+
+`git_sharp log`
+- Prints every commit in current branch untill the initial commit.
+
+`git_sharp branch <branch_name>`
+- Creates a new branch with specified name that points to current commit.
+Note that it does not checkout this branch.
+
+`git_sharp add <path>... `
+- Adds given path or paths into stage.
+Path may be a file or a directory.
+If directory is specified, adds all the files in that directory.
+
+`git_sharp commit <message>`
+- Creates a new commit with specified message.
+There must be something in staging area before commit.
+
+`git_sharp checkout <branch_name>`
+- Checks out given branch_name.
+This command has the same effect as its Git counterpart - ie. leaves local modifications
+untouched.
+However there are some situations that may cause this command to fail.
+See Git documentation for more information.
