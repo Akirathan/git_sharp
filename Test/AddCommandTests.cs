@@ -16,7 +16,7 @@ namespace Test {
 		}
 		
 		[Fact]
-		public void Test1()
+		public void StageOneFileTest()
 		{
 			CreateFile("a.txt", "Nazdar");
 			new AddCommand(new string[] {"a.txt"}).Process();
@@ -27,7 +27,7 @@ namespace Test {
 		}
 
 		[Fact]
-		public void SubDirTest()
+		public void StageFilesInSubDirTest()
 		{
 			CreateFile("a.txt", "a content");
 			Directory.CreateDirectory("dir/subdir");
