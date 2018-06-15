@@ -146,26 +146,26 @@ namespace GitSharp {
 		/// </summary>
 		/// <param name="fileName"></param>
 		/// <returns></returns>
-		public static File.StatusType ResolveFileStatus(RelativePath filePath)
+		public static FileStatus ResolveFileStatus(RelativePath filePath)
 		{
 			if (!ContainsFile(filePath)) {
-				return File.StatusType.Untracked;
+				return FileStatus.Untracked;
 			}
 
 			if (IsDeletedInWdir(filePath)) {
-				return File.StatusType.Deleted;
+				return FileStatus.Deleted;
 			}
             if (IsCommited(filePath)) {
-                return File.StatusType.Commited;
+                return FileStatus.Commited;
             }
             if (IsStaged(filePath)) {
-                return File.StatusType.Staged;
+                return FileStatus.Staged;
             }
 			if (IsModified(filePath)) {
-				return File.StatusType.Modified;
+				return FileStatus.Modified;
 			}
 			
-			return File.StatusType.Ignored;
+			return FileStatus.Ignored;
 		}
 
 		/// <summary>

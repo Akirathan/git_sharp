@@ -50,10 +50,9 @@
     <Compile Include="Commands\InitCommand.cs" />
     <Compile Include="Commands\LogCommand.cs" />
     <Compile Include="Commands\StatusCommand.cs" />
-    <Compile Include="File.cs" />
+    <Compile Include="FileStatus.cs" />
     <Compile Include="Hash\ContentHasher.cs" />
     <Compile Include="Hash\HashKey.cs" />
-    <Compile Include="IndexFileOperations.cs" />
     <Compile Include="Index.cs" />
     <Compile Include="ObjectDatabase.cs" />
     <Compile Include="Objects\Blob.cs" />

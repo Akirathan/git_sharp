@@ -143,21 +143,21 @@ namespace GitSharp.Commands {
 			}
 			
 			Index.UpdateFileInWdir(filePath);
-			File.StatusType fileStatus = Index.ResolveFileStatus(filePath);
+			FileStatus fileFileStatus = Index.ResolveFileStatus(filePath);
 			
-			switch (fileStatus) {
-				case File.StatusType.Untracked:
-				case File.StatusType.Modified:
+			switch (fileFileStatus) {
+				case FileStatus.Untracked:
+				case FileStatus.Modified:
 					CreateAndStoreBlob(filePath);
 					Index.StageFile(filePath);
 					break;
-				case File.StatusType.Staged:
-				case File.StatusType.Commited:
+				case FileStatus.Staged:
+				case FileStatus.Commited:
 					break;
-                case File.StatusType.Deleted:
+                case FileStatus.Deleted:
 	                Index.StageFile(filePath);
                     break;
-				case File.StatusType.Ignored:
+				case FileStatus.Ignored:
 					_encounteredIgnoredFiles.Add(filePath);
 					break;
 				default:

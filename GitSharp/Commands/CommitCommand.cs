@@ -42,7 +42,7 @@ namespace GitSharp.Commands {
 			foreach (string stagedFile in stagedFiles) {
 				RelativePath stagedFilePath = new RelativePath(stagedFile);
 				
-				if (Index.ResolveFileStatus(stagedFilePath) == File.StatusType.Deleted) {
+				if (Index.ResolveFileStatus(stagedFilePath) == FileStatus.Deleted) {
 					Index.RemoveFile(stagedFilePath);
 					continue;
 				}
