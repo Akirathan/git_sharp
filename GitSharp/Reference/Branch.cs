@@ -35,6 +35,7 @@ namespace GitSharp.Reference {
 		public void SetCommitKey(HashKey commitKey)
 		{
 			_commitKey = commitKey;
+			_commit = null;
 			IsModified = true;
 		}
 
