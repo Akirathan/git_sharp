@@ -15,6 +15,29 @@ namespace Test {
 			Program.Main(new []{"status"});
 			Assert.True(true);
 		}
+
+		[Fact]
+		public void StatusAfterFirstStageTest()
+		{
+			Init();
+			
+			CreateFile("a.txt", "a content");
+			Program.Main(new []{"add", "a.txt"});
+			Program.Main(new []{"status"});
+			Assert.True(true);
+		}
+
+		[Fact]
+		public void StatusAfterFirstCommitTest()
+		{
+			Init();
+			
+			CreateFile("a.txt", "a content");
+			Program.Main(new []{"add", "a.txt"});
+			Program.Main(new []{"commit", "Initial commit"});
+			Program.Main(new []{"status"});
+			Assert.True(true);
+		}
 		
 		private void Init()
 		{
