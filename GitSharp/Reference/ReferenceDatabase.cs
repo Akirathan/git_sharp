@@ -38,7 +38,7 @@ namespace GitSharp.Reference {
 		public static void Dispose()
 		{
 			foreach (Branch branch in _trackedBranches.Values) {
-				if (branch.IsModified && BranchPointsToCommit(branch)) {
+				if (branch.IsModified) {
 					SaveBranch(branch);
 				}
 			}
@@ -86,14 +86,6 @@ namespace GitSharp.Reference {
 				_trackedBranches.Add(branchName, branch);
 			}
 			return _trackedBranches[branchName];
-		}
-
-		/// Returns true if the given branch points to a commit.
-		/// Note that implicitly-created master branch points to a commit once
-		/// first commit is created.
-		private static bool BranchPointsToCommit(Branch branch)
-		{
-			return branch.GetCommitKey() != null;
 		}
 
 		private static bool BranchExists(string branchName)
