@@ -137,7 +137,13 @@ namespace GitSharp.Reference {
 
 		private static string GetBranchFileContent(Branch branch)
 		{
-			return branch.GetCommitKey().ToString();
+			HashKey key = branch.GetCommitKey();
+			if (key == null) {
+				return "0";
+			}
+			else {
+				return key.ToString();
+			}
 		}
 
 		private static string ReadFile(string fileName)
